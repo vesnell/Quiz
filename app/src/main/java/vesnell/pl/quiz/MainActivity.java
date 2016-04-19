@@ -4,15 +4,17 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.List;
+
+import vesnell.pl.quiz.model.Quiz;
 
 public class MainActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver {
 
     private ListView listView;
-    private ArrayAdapter arrayAdapter;
+    private ListViewAdapter adapter;
     private DownloadResultReceiver mReceiver;
 
     @Override
@@ -47,11 +49,11 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             case DownloadQuizService.STATUS_FINISHED:
                 //close downloading dialog
 
-                String[] results = resultData.getStringArray("result");
+                List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
 
                 //update listview
-                arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, android.R.id.text1, results);
-                listView.setAdapter(arrayAdapter);
+                adapter = new ListViewAdapter(this, quizzes);
+                listView.setAdapter(adapter);
                 break;
             case DownloadQuizService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);

@@ -19,8 +19,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import vesnell.pl.quiz.json.JsonTags;
+import vesnell.pl.quiz.model.Quiz;
 import vesnell.pl.quiz.utils.Resources;
 
 public class DownloadQuizService extends IntentService {
@@ -52,11 +54,11 @@ public class DownloadQuizService extends IntentService {
             receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 
             try {
-                String[] results = downloadData(url);
+                ArrayList<Quiz> results = downloadData(url);
 
                 //send result back to activity
-                if (results != null && results.length > 0) {
-                    bundle.putStringArray(RESULT, results);
+                if (results.size() > 0) {
+                    bundle.putSerializable(RESULT, results);
                     receiver.send(STATUS_FINISHED, bundle);
                 }
             } catch (Exception e) {
@@ -69,7 +71,7 @@ public class DownloadQuizService extends IntentService {
         this.stopSelf();
     }
 
-    private String[] downloadData(String requestUrl) throws IOException, DownloadException {
+    private ArrayList<Quiz> downloadData(String requestUrl) throws IOException, DownloadException {
         InputStream inputStream;
         HttpURLConnection urlConnection;
 
@@ -84,7 +86,7 @@ public class DownloadQuizService extends IntentService {
         if (statusCode == 200) {
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             String response = convertInputStreamToString(inputStream);
-            String[] results = parseResult(response);
+            ArrayList<Quiz> results = parseResult(response);
             return results;
         } else {
             throw new DownloadException(Resources.getString(R.string.error_download_data));
@@ -106,18 +108,17 @@ public class DownloadQuizService extends IntentService {
         return result;
     }
 
-    private String[] parseResult(String result) {
+    private ArrayList<Quiz> parseResult(String result) {
 
-        String[] quizzes = null;
+        ArrayList<Quiz> quizzes = new ArrayList<Quiz>();
         try {
             JSONObject response = new JSONObject(result);
             JSONArray items = response.optJSONArray(JsonTags.items);
-            quizzes = new String[items.length()];
 
             for (int i = 0; i < items.length(); i++) {
-                JSONObject title = items.optJSONObject(i);
-                String quizTitle = title.optString(JsonTags.title);
-                quizzes[i] = quizTitle;
+                JSONObject item = items.optJSONObject(i);
+                Quiz quiz = new Quiz(item);
+                quizzes.add(quiz);
             }
 
         } catch (JSONException e) {
