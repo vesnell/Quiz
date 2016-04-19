@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Quiz</string>
+    <string name="quiz_url" translatable="false">http://quiz.o2.pl/api/v1/quizzes/0/100</string>
+    <string name="quiz_questions_url" translatable="false">http://quiz.o2.pl/api/v1/quiz/%1$d/0</string>
+    <string name="error_download_data">Nie udało się pobrać danych</string>
 </resources>
