@@ -14,24 +14,19 @@ public class Quiz implements Serializable {
     private String id;
     private String title;
     private String mainPhoto;
-    private Integer score;
     private Integer state;
+    private Integer questionsCount;
+    private Integer correctAnswers;
 
     public Quiz(JSONObject item) {
         String title = item.optString(JsonTags.title);
         String id = item.optString(JsonTags.id);
         String mainPhoto = item.optString(JsonTags.mainPhoto);
+        Integer questionsCount = item.optInt(JsonTags.questions);
         this.title = title;
         this.id = id;
         this.mainPhoto = mainPhoto;
-    }
-
-    public Quiz(String id, String title, String mainPhoto, Integer score, Integer state) {
-        this.id = id;
-        this.title = title;
-        this.mainPhoto = mainPhoto;
-        this.score = score;
-        this.state = state;
+        this.questionsCount = questionsCount;
     }
 
     public String getId() {
@@ -59,11 +54,11 @@ public class Quiz implements Serializable {
     }
 
     public Integer getScore() {
-        return score;
+        return (correctAnswers * 100) / questionsCount;
     }
 
-    public void setScore(Integer score) {
-        this.score = score;
+    public boolean hasScore() {
+        return correctAnswers != null;
     }
 
     public Integer getState() {
@@ -72,5 +67,25 @@ public class Quiz implements Serializable {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public boolean hasState() {
+        return state != null;
+    }
+
+    public Integer getQuestionsCount() {
+        return questionsCount;
+    }
+
+    public void setQuestionsCount(Integer questionsCount) {
+        this.questionsCount = questionsCount;
+    }
+
+    public Integer getCorrectAnswers() {
+        return correctAnswers;
+    }
+
+    public void setCorrectAnswers(Integer correctAnswers) {
+        this.correctAnswers = correctAnswers;
     }
 }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import vesnell.pl.quiz.model.Quiz;
+import vesnell.pl.quiz.utils.Resources;
 
 /**
  * Created by alek6 on 19.04.2016.
@@ -43,6 +44,8 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
             //configure view holder
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.tvTitle = (TextView) rowView.findViewById(R.id.title);
+            viewHolder.tvScore = (TextView) rowView.findViewById(R.id.score);
+            viewHolder.tvState = (TextView) rowView.findViewById(R.id.state);
             rowView.setTag(viewHolder);
         }
 
@@ -51,6 +54,22 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
         Quiz quiz = quizzes.get(position);
         String title = quiz.getTitle();
         holder.tvTitle.setText(title);
+
+        if (quiz.hasState()) {
+            holder.tvState.setVisibility(View.VISIBLE);
+            String state = Resources.getString(R.string.quiz_last_state, quiz.getState());
+            holder.tvState.setText(state);
+        } else {
+            holder.tvState.setVisibility(View.GONE);
+        }
+        if (quiz.hasScore()) {
+            holder.tvScore.setVisibility(View.VISIBLE);
+            String score = Resources.getString(R.string.quiz_last_score, quiz.getCorrectAnswers(),
+                    quiz.getQuestionsCount(), quiz.getScore());
+            holder.tvScore.setText(score);
+        } else {
+            holder.tvScore.setVisibility(View.GONE);
+        }
 
         return rowView;
     }

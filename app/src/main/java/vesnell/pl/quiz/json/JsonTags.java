@@ -8,4 +8,5 @@ public interface JsonTags {
     String mainPhoto = "mainPhoto";
     String id = "id";
     String items = "items";
+    String questions = "questions";
 }

@@ -1,5 +1,6 @@
 package vesnell.pl.quiz;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     private ListView listView;
     private ListViewAdapter adapter;
     private DownloadResultReceiver mReceiver;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         setContentView(R.layout.activity_main);
 
         listView = (ListView) findViewById(R.id.listView);
+
+        progressDialog = new ProgressDialog(this);
 
         //start service to download quizzes
         mReceiver = new DownloadResultReceiver(new Handler());
@@ -43,11 +47,10 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case DownloadQuizService.STATUS_RUNNING:
-
-                //set dialog downloading...
+                progressDialog.show();
                 break;
             case DownloadQuizService.STATUS_FINISHED:
-                //close downloading dialog
+                progressDialog.cancel();
 
                 List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
 
