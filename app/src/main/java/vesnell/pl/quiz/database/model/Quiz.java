@@ -35,7 +35,8 @@ public class Quiz implements Serializable {
     public Quiz(JSONObject item) {
         String title = item.optString(JsonTags.title);
         String id = item.optString(JsonTags.id);
-        String mainPhoto = item.optString(JsonTags.mainPhoto);
+        JSONObject mainPhotoJson = item.optJSONObject(JsonTags.mainPhoto);
+        String mainPhoto = mainPhotoJson.optString(JsonTags.url);
         Integer questionsCount = item.optInt(JsonTags.questions);
         this.title = title;
         this.id = id;

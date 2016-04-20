@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-        QuizController quizController = new QuizController(this);
         switch (resultCode) {
             case DownloadQuizService.STATUS_RUNNING:
                 progressDialog.show();
@@ -60,13 +59,13 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             case DownloadQuizService.STATUS_FINISHED:
-                progressDialog.cancel();
                 List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
                 if (quizzes != null && quizzes.size() > 0) {
                     saveQuiz(quizzes);
                 } else {
                     showQuizList();
                 }
+                progressDialog.cancel();
                 break;
 
         }
