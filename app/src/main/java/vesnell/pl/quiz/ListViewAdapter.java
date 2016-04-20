@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import vesnell.pl.quiz.model.Quiz;
+import vesnell.pl.quiz.database.model.Quiz;
 import vesnell.pl.quiz.utils.Resources;
 
 /**

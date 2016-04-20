@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import vesnell.pl.quiz.model.Quiz;
+import vesnell.pl.quiz.database.model.Quiz;
 
 public class MainActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver {
 
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 listView.setAdapter(adapter);
                 break;
             case DownloadQuizService.STATUS_ERROR:
+                progressDialog.cancel();
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
                 break;

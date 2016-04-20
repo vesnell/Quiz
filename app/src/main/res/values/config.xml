@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quiz_url" translatable="false">http://quiz.o2.pl/api/v1/quizzes/0/100</string>
+    <string name="quiz_questions_url" translatable="false">http://quiz.o2.pl/api/v1/quiz/%1$s/0</string>
+</resources>

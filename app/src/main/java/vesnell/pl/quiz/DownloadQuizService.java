@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import vesnell.pl.quiz.json.JsonTags;
-import vesnell.pl.quiz.model.Quiz;
+import vesnell.pl.quiz.database.model.Quiz;
 import vesnell.pl.quiz.utils.Resources;
 
 public class DownloadQuizService extends IntentService {

@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Quiz</string>
-    <string name="quiz_url" translatable="false">http://quiz.o2.pl/api/v1/quizzes/0/100</string>
-    <string name="quiz_questions_url" translatable="false">http://quiz.o2.pl/api/v1/quiz/%1$s/0</string>
     <string name="error_download_data">Nie udało się pobrać danych</string>
     <string name="quiz_last_score">Ostatni wynik: %1$d/%2$d %3$d%%</string>
     <string name="quiz_last_state">Quiz rozwiązany w %1$d%%</string>

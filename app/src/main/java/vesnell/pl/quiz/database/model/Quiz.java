@@ -1,4 +1,7 @@
-package vesnell.pl.quiz.model;
+package vesnell.pl.quiz.database.model;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import org.json.JSONObject;
 
@@ -9,13 +12,20 @@ import vesnell.pl.quiz.json.JsonTags;
 /**
  * Created by alek6 on 19.04.2016.
  */
+@DatabaseTable(tableName="Quiz")
 public class Quiz implements Serializable {
 
+    @DatabaseField(id = true)
     private String id;
+    @DatabaseField
     private String title;
+    @DatabaseField
     private String mainPhoto;
+    @DatabaseField
     private Integer state;
+    @DatabaseField
     private Integer questionsCount;
+    @DatabaseField
     private Integer correctAnswers;
 
     public Quiz(JSONObject item) {
