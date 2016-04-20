@@ -5,19 +5,25 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.List;
 
+import vesnell.pl.quiz.database.controller.QuizController;
 import vesnell.pl.quiz.database.model.Quiz;
 
-public class MainActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver {
+public class MainActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver,
+        QuizController.QuizzesListSaveCallback {
+
+    private static final String TAG = "MainActivity";
 
     private ListView listView;
     private ListViewAdapter adapter;
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
+    private QuizController quizController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
         setContentView(R.layout.activity_main);
 
+        quizController = new QuizController(getApplicationContext());
         listView = (ListView) findViewById(R.id.listView);
-
         progressDialog = new ProgressDialog(this);
 
         //start service to download quizzes
@@ -45,24 +51,50 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
+        QuizController quizController = new QuizController(this);
         switch (resultCode) {
             case DownloadQuizService.STATUS_RUNNING:
                 progressDialog.show();
                 break;
-            case DownloadQuizService.STATUS_FINISHED:
-                progressDialog.cancel();
-
-                List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
-
-                //update listview
-                adapter = new ListViewAdapter(this, quizzes);
-                listView.setAdapter(adapter);
-                break;
             case DownloadQuizService.STATUS_ERROR:
-                progressDialog.cancel();
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            case DownloadQuizService.STATUS_FINISHED:
+                progressDialog.cancel();
+                List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
+                if (quizzes != null && quizzes.size() > 0) {
+                    saveQuiz(quizzes);
+                } else {
+                    showQuizList();
+                }
                 break;
+
         }
+    }
+
+    private void saveQuiz(final List<Quiz> quizzes) {
+        quizController.setQuizzesListSaveCallback(this);
+        quizController.saveQuizzesList(quizzes);
+    }
+
+    @Override
+    public void onQuizzesListSaved(boolean result) {
+        if (result) {
+            showQuizList();
+        } else {
+            Log.w(TAG, "error: write to db");
+            Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showQuizList() {
+        quizController.setQuizzesListLoadCallback(new QuizController.QuizzesListLoadCallback() {
+            @Override
+            public void onQuizzesListLoaded(List<Quiz> quizzes) {
+                adapter = new ListViewAdapter(MainActivity.this, quizzes);
+                listView.setAdapter(adapter);
+            }
+        });
+        quizController.requestList();
     }
 }

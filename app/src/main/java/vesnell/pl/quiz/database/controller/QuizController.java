@@ -19,7 +19,7 @@ public class QuizController extends BaseController<Quiz> {
 
     private static final String TAG = "QuizController";
 
-    public QuizController(Context context, Class clazz) {
+    public QuizController(Context context) {
         super(context, Quiz.class);
     }
 
@@ -33,7 +33,7 @@ public class QuizController extends BaseController<Quiz> {
         void onQuizSaved(boolean result, Quiz quiz);
     }
     public interface QuizzesListSaveCallback {
-        void onQuizzesListSaved(boolean result, int added);
+        void onQuizzesListSaved(boolean result);
     }
 
     private QuizControllerHandler handler = new QuizControllerHandler();
@@ -75,13 +75,13 @@ public class QuizController extends BaseController<Quiz> {
         ControllerHandler.getInstance().execute(new ControllerRunnable() {
             @Override
             protected void runController() {
-                int added = 0;
                 for (Quiz quiz : quizzes) {
-                    if (create(quiz)) {
-                        added++;
+                    String quizId = quiz.getId();
+                    if (get(quizId) == null) {
+                        create(quiz);
                     }
                 }
-                handler.onQuizzesListSaved(true, added);
+                handler.onQuizzesListSaved(true);
             }
         });
     }
@@ -125,11 +125,11 @@ public class QuizController extends BaseController<Quiz> {
         }
 
         @Override
-        public void onQuizzesListSaved(final boolean result, final int added) {
+        public void onQuizzesListSaved(final boolean result) {
             this.post(new CallbackRunnable() {
                 @Override
                 protected void runCallback() {
-                    quizzesListSaveCallback.onQuizzesListSaved(result, added);
+                    quizzesListSaveCallback.onQuizzesListSaved(result);
                 }
             });
         }

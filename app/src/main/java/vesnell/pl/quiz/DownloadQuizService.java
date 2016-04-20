@@ -5,10 +5,13 @@ package vesnell.pl.quiz;
  */
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import vesnell.pl.quiz.json.JsonTags;
@@ -27,15 +32,20 @@ import vesnell.pl.quiz.utils.Resources;
 
 public class DownloadQuizService extends IntentService {
 
+    private static final String TAG = "DownloadQuizService";
+
     public static final String URL = "url";
     public static final String RECEIVER = "receiver";
-    public static final String RESULT = "result";
+    public static final String RESULT = "results";
 
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
 
-    private static final String TAG = "DownloadQuizService";
+    public static final String QUIZ_PREFERENCES = "quizPreferences" ;
+    public static final String MD5_QUIZ_PREFERENCES = "md5";
+
+    private SharedPreferences sharedpreferences;
 
     public DownloadQuizService() {
         super(DownloadQuizService.class.getName());
@@ -43,6 +53,8 @@ public class DownloadQuizService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        sharedpreferences = getSharedPreferences(QUIZ_PREFERENCES, Context.MODE_PRIVATE);
 
         final ResultReceiver receiver = intent.getParcelableExtra(RECEIVER);
         String url = intent.getStringExtra(URL);
@@ -54,13 +66,11 @@ public class DownloadQuizService extends IntentService {
             receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 
             try {
-                ArrayList<Quiz> results = downloadData(url);
+                ArrayList<Quiz> results = downloadNewData(url);
 
                 //send result back to activity
-                if (results.size() > 0) {
-                    bundle.putSerializable(RESULT, results);
-                    receiver.send(STATUS_FINISHED, bundle);
-                }
+                bundle.putSerializable(RESULT, results);
+                receiver.send(STATUS_FINISHED, bundle);
             } catch (Exception e) {
 
                 //send error back to activity
@@ -71,7 +81,7 @@ public class DownloadQuizService extends IntentService {
         this.stopSelf();
     }
 
-    private ArrayList<Quiz> downloadData(String requestUrl) throws IOException, DownloadException {
+    private ArrayList<Quiz> downloadNewData(String requestUrl) throws IOException, DownloadException {
         InputStream inputStream;
         HttpURLConnection urlConnection;
 
@@ -86,8 +96,17 @@ public class DownloadQuizService extends IntentService {
         if (statusCode == 200) {
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             String response = convertInputStreamToString(inputStream);
-            ArrayList<Quiz> results = parseResult(response);
-            return results;
+
+            String quizMD5 = sharedpreferences.getString(MD5_QUIZ_PREFERENCES, null);
+            String md5FromResponse = getMD5(response);
+            if (!md5FromResponse.equals(quizMD5)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(MD5_QUIZ_PREFERENCES, md5FromResponse);
+                editor.commit();
+                ArrayList<Quiz> results = parseResult(response);
+                return results;
+            }
+            return null;
         } else {
             throw new DownloadException(Resources.getString(R.string.error_download_data));
         }
@@ -136,5 +155,24 @@ public class DownloadQuizService extends IntentService {
         public DownloadException(String message, Throwable cause) {
             super(message, cause);
         }
+    }
+
+    public String getMD5(String s) {
+        try {
+            //create md5 hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            //create hex string
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

@@ -13,7 +13,7 @@ import vesnell.pl.quiz.database.DBHelper;
  * Created by alek6 on 20.04.2016.
  */
 public abstract class BaseController<M> {
-    protected final RuntimeExceptionDao<M, Integer> dao;
+    protected final RuntimeExceptionDao<M, String> dao;
     protected final Context context;
 
     protected BaseController(Context context, Class clazz) {
@@ -39,7 +39,7 @@ public abstract class BaseController<M> {
         return dao.update(item) == 1;
     }
 
-    protected M get(int id) {
+    protected M get(String id) {
         return dao.queryForId(id);
     }
 

@@ -28,6 +28,10 @@ public class Quiz implements Serializable {
     @DatabaseField
     private Integer correctAnswers;
 
+    //for OrmLite
+    public Quiz() {
+    }
+
     public Quiz(JSONObject item) {
         String title = item.optString(JsonTags.title);
         String id = item.optString(JsonTags.id);
