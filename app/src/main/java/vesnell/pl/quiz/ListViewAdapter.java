@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import vesnell.pl.quiz.database.model.Quiz;
@@ -46,6 +48,7 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
             viewHolder.tvTitle = (TextView) rowView.findViewById(R.id.title);
             viewHolder.tvScore = (TextView) rowView.findViewById(R.id.score);
             viewHolder.tvState = (TextView) rowView.findViewById(R.id.state);
+            viewHolder.ivMainPhoto = (ImageView) rowView.findViewById(R.id.image);
             rowView.setTag(viewHolder);
         }
 
@@ -70,6 +73,8 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
         } else {
             holder.tvScore.setVisibility(View.GONE);
         }
+        Picasso.with(context).load(quizzes.get(position).getMainPhoto()).resize(70, 70)
+                .centerCrop().into(holder.ivMainPhoto);
 
         return rowView;
     }
