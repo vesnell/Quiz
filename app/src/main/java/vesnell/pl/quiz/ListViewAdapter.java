@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -24,6 +25,7 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
     private List<Quiz> quizzes;
 
     static class ViewHolder {
+        public RelativeLayout itemMainLayout;
         public TextView tvTitle;
         public TextView tvScore;
         public TextView tvState;
@@ -45,6 +47,7 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
 
             //configure view holder
             ViewHolder viewHolder = new ViewHolder();
+            viewHolder.itemMainLayout = (RelativeLayout) rowView.findViewById(R.id.itemMainLayout);
             viewHolder.tvTitle = (TextView) rowView.findViewById(R.id.title);
             viewHolder.tvScore = (TextView) rowView.findViewById(R.id.score);
             viewHolder.tvState = (TextView) rowView.findViewById(R.id.state);
@@ -54,6 +57,10 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
 
         //fill data
         ViewHolder holder = (ViewHolder) rowView.getTag();
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT , (int) context.getResources().getDimension(R.dimen.list_item_height));
+        holder.itemMainLayout.setLayoutParams(layoutParams);
+
         Quiz quiz = quizzes.get(position);
         String title = quiz.getTitle();
         holder.tvTitle.setText(title);
@@ -74,7 +81,7 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
             holder.tvScore.setVisibility(View.GONE);
         }
         Picasso.with(context).load(quizzes.get(position).getMainPhoto())
-                .resizeDimen(R.dimen.list_item_height, R.dimen.list_item_width).centerCrop().into(holder.ivMainPhoto);
+                .resizeDimen(R.dimen.list_item_width, R.dimen.list_item_height).centerCrop().into(holder.ivMainPhoto);
 
         return rowView;
     }
