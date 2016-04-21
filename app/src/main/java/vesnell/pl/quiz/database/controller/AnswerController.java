@@ -3,6 +3,7 @@ package vesnell.pl.quiz.database.controller;
 import android.content.Context;
 import android.os.Handler;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import vesnell.pl.quiz.database.controller.base.BaseController;
@@ -10,6 +11,7 @@ import vesnell.pl.quiz.database.controller.base.CallbackRunnable;
 import vesnell.pl.quiz.database.controller.base.ControllerHandler;
 import vesnell.pl.quiz.database.controller.base.ControllerRunnable;
 import vesnell.pl.quiz.database.model.Answer;
+import vesnell.pl.quiz.database.model.Question;
 
 /**
  * Created by ascen on 2016-04-21.
@@ -73,10 +75,17 @@ public class AnswerController extends BaseController<Answer> {
         ControllerHandler.getInstance().execute(new ControllerRunnable() {
             @Override
             protected void runController() {
-                for (Answer answer : answers) {
-                    create(answer);
+                try {
+                    for (Answer answer : answers) {
+                        Question question = answer.getQuestion();
+                        if (getFirst("question_id", question.getId()) == null) {
+                            create(answer);
+                        }
+                    }
+                    handler.onAnswersListSaved(true);
+                } catch(SQLException e) {
+                    handler.onAnswersListSaved(false);
                 }
-                handler.onAnswersListSaved(true);
             }
         });
     }

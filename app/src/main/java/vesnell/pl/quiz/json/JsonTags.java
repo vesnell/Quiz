@@ -10,4 +10,8 @@ public interface JsonTags {
     String items = "items";
     String questions = "questions";
     String url = "url";
+    String text = "text";
+    String order = "order";
+    String image = "image";
+    String answers = "answers";
 }

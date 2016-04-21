@@ -44,11 +44,11 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (quizzes != null) {
-                    String quizId = quizzes.get(position).getId();
-                    int questionsCount = quizzes.get(position).getQuestionsCount();
+                    Quiz quiz = quizzes.get(position);
                     Intent i = new Intent(MainActivity.this, QuestionsActivity.class);
-                    i.putExtra(Quiz.QUIZ_ID, quizId);
-                    i.putExtra(Quiz.QUESTIONS_COUNT, questionsCount);
+
+                    //send to questions activity quizId and number of questions
+                    i.putExtra(Quiz.NAME, quiz);
                     startActivityForResult(i, REQ_QUESTIONS);
                 }
             }
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         //send extras to download service
         intent.putExtra(DownloadQuizService.URL, url);
         intent.putExtra(DownloadQuizService.RECEIVER, mReceiver);
-
+        intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadType.QUIZ);
         startService(intent);
     }
 

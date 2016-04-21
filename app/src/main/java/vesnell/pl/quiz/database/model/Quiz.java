@@ -24,8 +24,7 @@ public class Quiz implements Serializable {
 
     private static final String TAG = "Quiz";
 
-    public static final String QUIZ_ID = "quizId";
-    public static final String QUESTIONS_COUNT = "questionsCount";
+    public static final String NAME = "quiz";
 
     @DatabaseField(id = true)
     private String id;

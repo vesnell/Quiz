@@ -7,9 +7,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import vesnell.pl.quiz.json.JsonTags;
 
 /**
  * Created by ascen on 2016-04-21.
@@ -20,20 +25,43 @@ public class Question {
     private static final String TAG = "Question";
 
     @DatabaseField(generatedId = true)
-    private int id;
+    private String id;
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Quiz quiz;
     @DatabaseField
     private String text;
     @DatabaseField
     private int order;
+    @DatabaseField
+    private String image;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
+
+    private ArrayList<Answer> tempAnswers;
 
     public Question() {
     }
 
-    public int getId() {
+    public Question(JSONObject item, Quiz quiz) {
+        String text = item.optString(JsonTags.text);
+        int order = item.optInt(JsonTags.order);
+        JSONObject jsonImage = item.optJSONObject(JsonTags.image);
+        String image = jsonImage.optString(JsonTags.url);
+        JSONArray jsonAnswers = item.optJSONArray(JsonTags.answers);
+        ArrayList<Answer> answers = new ArrayList<Answer>();
+        for (int i = 0; i < jsonAnswers.length(); i++) {
+            JSONObject answerItem = jsonAnswers.optJSONObject(i);
+            Answer answer = new Answer(answerItem);
+            answers.add(answer);
+        }
+        this.quiz = quiz;
+        this.text = text;
+        this.order = order;
+        this.image = image;
+        this.tempAnswers = answers;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -61,6 +89,14 @@ public class Question {
         this.order = order;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     public List<Answer> getAnswers() {
         try {
             if (answers != null) {
@@ -73,5 +109,9 @@ public class Question {
             return new ArrayList<Answer>(answers);
         }
         return null;
+    }
+
+    public ArrayList<Answer> getTempAnswers() {
+        return tempAnswers;
     }
 }

@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.json.JsonTags;
 import vesnell.pl.quiz.database.model.Quiz;
 import vesnell.pl.quiz.utils.Resources;
@@ -36,6 +37,7 @@ public class DownloadQuizService extends IntentService {
 
     public static final String URL = "url";
     public static final String RECEIVER = "receiver";
+    public static final String DOWNLOAD_TYPE = "downloadType";
     public static final String RESULT = "results";
 
     public static final int STATUS_RUNNING = 0;
@@ -46,6 +48,7 @@ public class DownloadQuizService extends IntentService {
     public static final String MD5_QUIZ_PREFERENCES = "md5";
 
     private SharedPreferences sharedpreferences;
+    private Quiz quiz;
 
     public DownloadQuizService() {
         super(DownloadQuizService.class.getName());
@@ -57,6 +60,7 @@ public class DownloadQuizService extends IntentService {
         sharedpreferences = getSharedPreferences(QUIZ_PREFERENCES, Context.MODE_PRIVATE);
 
         final ResultReceiver receiver = intent.getParcelableExtra(RECEIVER);
+        DownloadType downloadType = (DownloadType) intent.getSerializableExtra(DOWNLOAD_TYPE);
         String url = intent.getStringExtra(URL);
 
         Bundle bundle = new Bundle();
@@ -66,10 +70,20 @@ public class DownloadQuizService extends IntentService {
             receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 
             try {
-                ArrayList<Quiz> results = downloadNewData(url);
+                Object results = downloadNewData(url, downloadType);
 
                 //send result back to activity
-                bundle.putSerializable(RESULT, results);
+                switch (downloadType) {
+                    case QUIZ:
+                        ArrayList<Quiz> quizzes = (ArrayList<Quiz>) results;
+                        bundle.putSerializable(RESULT, quizzes);
+                        break;
+                    case QUESTION:
+                        quiz = (Quiz) intent.getSerializableExtra(Quiz.NAME);
+                        ArrayList<Question> questions = (ArrayList<Question>) results;
+                        bundle.putSerializable(RESULT, questions);
+                        break;
+                }
                 receiver.send(STATUS_FINISHED, bundle);
             } catch (Exception e) {
 
@@ -81,7 +95,7 @@ public class DownloadQuizService extends IntentService {
         this.stopSelf();
     }
 
-    private ArrayList<Quiz> downloadNewData(String requestUrl) throws IOException, DownloadException {
+    private Object downloadNewData(String requestUrl, DownloadType downloadType) throws IOException, DownloadException {
         InputStream inputStream;
         HttpURLConnection urlConnection;
 
@@ -97,14 +111,21 @@ public class DownloadQuizService extends IntentService {
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             String response = convertInputStreamToString(inputStream);
 
-            String quizMD5 = sharedpreferences.getString(MD5_QUIZ_PREFERENCES, null);
-            String md5FromResponse = getMD5(response);
-            if (!md5FromResponse.equals(quizMD5)) {
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(MD5_QUIZ_PREFERENCES, md5FromResponse);
-                editor.commit();
-                ArrayList<Quiz> results = parseResult(response);
-                return results;
+            switch (downloadType) {
+                case QUIZ:
+                    String quizMD5 = sharedpreferences.getString(MD5_QUIZ_PREFERENCES, null);
+                    String md5FromResponse = getMD5(response);
+                    if (!md5FromResponse.equals(quizMD5)) {
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.putString(MD5_QUIZ_PREFERENCES, md5FromResponse);
+                        editor.commit();
+                        Object results = parseResult(response, downloadType);
+                        return results;
+                    }
+                    break;
+                case QUESTION:
+                    Object results = parseResult(response, downloadType);
+                    return results;
             }
             return null;
         } else {
@@ -127,23 +148,42 @@ public class DownloadQuizService extends IntentService {
         return result;
     }
 
-    private ArrayList<Quiz> parseResult(String result) {
+    private Object parseResult(String result, DownloadType downloadType) {
+        switch (downloadType) {
+            case QUIZ:
+                ArrayList<Quiz> quizzes = new ArrayList<Quiz>();
+                try {
+                    JSONObject response = new JSONObject(result);
+                    JSONArray items = response.optJSONArray(JsonTags.items);
 
-        ArrayList<Quiz> quizzes = new ArrayList<Quiz>();
-        try {
-            JSONObject response = new JSONObject(result);
-            JSONArray items = response.optJSONArray(JsonTags.items);
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.optJSONObject(i);
+                        Quiz quiz = new Quiz(item);
+                        quizzes.add(quiz);
+                    }
 
-            for (int i = 0; i < items.length(); i++) {
-                JSONObject item = items.optJSONObject(i);
-                Quiz quiz = new Quiz(item);
-                quizzes.add(quiz);
-            }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return quizzes;
+            case QUESTION:
+                ArrayList<Question> questions = new ArrayList<Question>();
+                try {
+                    JSONObject response = new JSONObject(result);
+                    JSONArray items = response.optJSONArray(JsonTags.questions);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.optJSONObject(i);
+                        Question question = new Question(item, quiz);
+                        questions.add(question);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return questions;
         }
-        return quizzes;
+        return null;
     }
 
     public class DownloadException extends Exception {
