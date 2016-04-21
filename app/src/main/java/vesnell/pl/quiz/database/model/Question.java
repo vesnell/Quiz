@@ -25,7 +25,7 @@ public class Question {
     private static final String TAG = "Question";
 
     @DatabaseField(generatedId = true)
-    private String id;
+    private int id;
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Quiz quiz;
     @DatabaseField
@@ -61,7 +61,7 @@ public class Question {
         this.tempAnswers = answers;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

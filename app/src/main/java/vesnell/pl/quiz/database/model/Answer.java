@@ -16,7 +16,7 @@ import vesnell.pl.quiz.json.JsonTags;
 public class Answer {
 
     @DatabaseField(generatedId = true)
-    private String id;
+    private int id;
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private Question question;
     @DatabaseField
@@ -40,7 +40,7 @@ public class Answer {
         this.order = answer.getOrder();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

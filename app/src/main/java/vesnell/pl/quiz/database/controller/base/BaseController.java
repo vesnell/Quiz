@@ -51,7 +51,7 @@ public abstract class BaseController<M> {
         return dao.delete(item) == 1;
     }
 
-    protected M getFirst(String field, String parentId) throws SQLException {
+    protected M getFirst(String field, Object parentId) throws SQLException {
         QueryBuilder<M, String> queryBuilder = dao.queryBuilder();
         SelectArg arg = new SelectArg();
         queryBuilder.where().eq(field, arg);
