@@ -5,8 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.util.List;
 
 import vesnell.pl.quiz.database.controller.QuestionController;
+import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
 /**
@@ -51,6 +56,19 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch (resultCode) {
+            case DownloadQuizService.STATUS_RUNNING:
+                progressDialog.show();
+                break;
+            case DownloadQuizService.STATUS_ERROR:
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            case DownloadQuizService.STATUS_FINISHED:
+                List<Question> questions = (List<Question>) resultData.getSerializable(DownloadQuizService.RESULT);
+                Log.d(TAG, questions.get(0).getText());
+                progressDialog.cancel();
+                break;
 
+        }
     }
 }
