@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import vesnell.pl.quiz.database.model.Answer;
+import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
 /**
@@ -14,7 +16,7 @@ import vesnell.pl.quiz.database.model.Quiz;
 public class DBConfigUtil extends OrmLiteConfigUtil {
 
     private static final Class<?>[] classes = new Class[] {
-            Quiz.class
+            Quiz.class, Question.class, Answer.class
     };
 
     public static void main(String[] args) throws SQLException, IOException {

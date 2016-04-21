@@ -1,11 +1,18 @@
 package vesnell.pl.quiz.database.model;
 
+import android.util.Log;
+
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import vesnell.pl.quiz.json.JsonTags;
 
@@ -14,6 +21,8 @@ import vesnell.pl.quiz.json.JsonTags;
  */
 @DatabaseTable(tableName="Quiz")
 public class Quiz implements Serializable {
+
+    private static final String TAG = "Quiz";
 
     public static final String QUIZ_ID = "quizId";
     public static final String QUESTIONS_COUNT = "questionsCount";
@@ -30,6 +39,8 @@ public class Quiz implements Serializable {
     private Integer questionsCount;
     @DatabaseField
     private Integer correctAnswers;
+    @ForeignCollectionField(eager = true)
+    private ForeignCollection<Question> questions;
 
     //for OrmLite
     public Quiz() {
@@ -105,5 +116,19 @@ public class Quiz implements Serializable {
 
     public void setCorrectAnswers(Integer correctAnswers) {
         this.correctAnswers = correctAnswers;
+    }
+
+    public List<Question> getQuestions() {
+        try {
+            if (questions != null) {
+                questions.refreshCollection();
+                return new ArrayList<Question>(questions);
+            }
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (NullPointerException e) {
+            return new ArrayList<Question>(questions);
+        }
+        return null;
     }
 }

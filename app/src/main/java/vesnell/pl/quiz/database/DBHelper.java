@@ -11,6 +11,8 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import vesnell.pl.quiz.R;
+import vesnell.pl.quiz.database.model.Answer;
+import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
 /**
@@ -41,6 +43,8 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable(connectionSource, Quiz.class);
+            TableUtils.createTable(connectionSource, Question.class);
+            TableUtils.createTable(connectionSource, Answer.class);
         } catch(SQLException e) {
             e.printStackTrace();
         }
@@ -49,6 +53,8 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
+            TableUtils.dropTable(connectionSource, Answer.class, true);
+            TableUtils.dropTable(connectionSource, Question.class, true);
             TableUtils.dropTable(connectionSource, Quiz.class, true);
             onCreate(database, connectionSource);
         } catch(SQLException e) {
