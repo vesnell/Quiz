@@ -56,11 +56,15 @@ public class QuestionController extends BaseController<Question> {
         handler.questionsListSaveCallback = questionsListSaveCallback;
     }
 
-    public void requestList() {
+    public void requestList(final Quiz quiz) {
         ControllerHandler.getInstance().execute(new ControllerRunnable() {
             @Override
             protected void runController() {
-                List<Question> questions = listAll();
+                RuntimeExceptionDao<Quiz, String> quizDao
+                        = OpenHelperManager.getHelper(context, DBHelper.class)
+                        .getRuntimeExceptionDao(Quiz.class);
+                Quiz refreshQuiz = quizDao.queryForId(quiz.getId());
+                List<Question> questions = refreshQuiz.getQuestions();
                 //Collections.sort(questions, new QuestionComparator());
                 handler.onQuestionsListLoaded(questions);
             }

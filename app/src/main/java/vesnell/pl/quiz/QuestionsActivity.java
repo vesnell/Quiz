@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import vesnell.pl.quiz.database.controller.AnswerController;
 import vesnell.pl.quiz.database.controller.QuestionController;
+import vesnell.pl.quiz.database.model.Answer;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
@@ -25,6 +27,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
     private QuestionController questionController;
+    private AnswerController answerController;
     private Quiz quiz;
 
     @Override
@@ -41,6 +44,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         setContentView(R.layout.activity_questions);
 
         questionController = new QuestionController(getApplicationContext());
+        answerController = new AnswerController(getApplicationContext());
         progressDialog = new ProgressDialog(this);
 
         mReceiver = new DownloadResultReceiver(new Handler());
@@ -82,10 +86,36 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     @Override
     public void onQuestionsListSaved(boolean result, List<Question> questions) {
         if (result) {
-
+            loadQuestions();
         } else {
             Log.w(TAG, "error: write to db");
             Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
         }
     }
+
+    private void loadQuestions() {
+        questionController.setQuestionsListLoadCallback(new QuestionController.QuestionsListLoadCallback() {
+            @Override
+            public void onQuestionsListLoaded(List<Question> questions) {
+                loadAnswers(questions);
+            }
+        });
+        questionController.requestList(quiz);
+    }
+
+    private void loadAnswers(List<Question> questions) {
+        for (Question question : questions) {
+            Log.d(TAG, question.getText());
+            answerController.setAnswersListLoadCallback(new AnswerController.AnswersListLoadCallback() {
+                @Override
+                public void onAnswersListLoaded(List<Answer> answers) {
+                    for (Answer answer : answers) {
+                        Log.d(TAG, answer.getText());
+                    }
+                }
+            });
+            answerController.requestList(question);
+        }
+    }
+
 }
