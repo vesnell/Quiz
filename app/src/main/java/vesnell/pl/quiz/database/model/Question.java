@@ -35,6 +35,8 @@ public class Question implements Serializable {
     private int order;
     @DatabaseField
     private String image;
+    @DatabaseField
+    private int answersCount;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
@@ -114,5 +116,13 @@ public class Question implements Serializable {
 
     public ArrayList<Answer> getTempAnswers() {
         return tempAnswers;
+    }
+
+    public int getAnswersCount() {
+        return answersCount;
+    }
+
+    public void setAnswersCount(int answersCount) {
+        this.answersCount = answersCount;
     }
 }

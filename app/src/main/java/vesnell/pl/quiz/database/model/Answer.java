@@ -15,8 +15,6 @@ import vesnell.pl.quiz.json.JsonTags;
 @DatabaseTable(tableName="Answer")
 public class Answer implements Serializable {
 
-    public static final int ANSWERS_IN_ONE_QUESTION_COUNT = 4;
-
     @DatabaseField(generatedId = true)
     private int id;
     @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)

@@ -87,7 +87,7 @@ public class AnswerController extends BaseController<Answer> {
                 try {
                     for (Answer answer : answers) {
                         Question question = answer.getQuestion();
-                        if (getCount("question_id", question.getId()) < Answer.ANSWERS_IN_ONE_QUESTION_COUNT) {
+                        if (getCount("question_id", question.getId()) != question.getAnswersCount()) {
                             create(answer);
                         }
                     }
