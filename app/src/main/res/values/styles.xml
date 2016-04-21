@@ -8,4 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="BackgroundImageView">
+        <item name="android:alpha">0.5</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+    <style name="QuizTextItem">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="QuizTextItem.Title">
+        <item name="android:textSize">@dimen/list_item_title_text_size</item>
+    </style>
+
+    <style name="QuizTextItem.SecondaryText">
+        <item name="android:textSize">@dimen/list_item_secondary_text_size</item>
+    </style>
+
 </resources>
