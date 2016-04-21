@@ -15,6 +15,9 @@ import vesnell.pl.quiz.json.JsonTags;
 @DatabaseTable(tableName="Quiz")
 public class Quiz implements Serializable {
 
+    public static final String QUIZ_ID = "quizId";
+    public static final String QUESTIONS_COUNT = "questionsCount";
+
     @DatabaseField(id = true)
     private String id;
     @DatabaseField

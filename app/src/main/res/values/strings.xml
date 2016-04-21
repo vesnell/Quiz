@@ -5,4 +5,5 @@
     <string name="quiz_last_state">Quiz rozwiązany w %1$d%%</string>
     <string name="error_write_to_db">Wystąpił problem z zapisem do bazy danych</string>
     <string name="image_item_thumb_desc">Miniaturka</string>
+    <string name="questions_title">Pytania</string>
 </resources>

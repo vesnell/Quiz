@@ -19,6 +19,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".QuestionsActivity"
+            android:label="@string/questions_title" >
+        </activity>
+
         <service
             android:name=".DownloadQuizService"
             android:exported="false" />

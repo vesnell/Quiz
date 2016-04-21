@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,12 +20,14 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         QuizController.QuizzesListSaveCallback {
 
     private static final String TAG = "MainActivity";
+    private static final int REQ_QUESTIONS = 1;
 
     private ListView listView;
     private ListViewAdapter adapter;
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
     private QuizController quizController;
+    private List<Quiz> quizzes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,21 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
         quizController = new QuizController(getApplicationContext());
         listView = (ListView) findViewById(R.id.listView);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (quizzes != null) {
+                    String quizId = quizzes.get(position).getId();
+                    int questionsCount = quizzes.get(position).getQuestionsCount();
+                    Intent i = new Intent(MainActivity.this, QuestionsActivity.class);
+                    i.putExtra(Quiz.QUIZ_ID, quizId);
+                    i.putExtra(Quiz.QUESTIONS_COUNT, questionsCount);
+                    startActivityForResult(i, REQ_QUESTIONS);
+                }
+            }
+        });
+
         progressDialog = new ProgressDialog(this);
 
         //start service to download quizzes
@@ -90,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         quizController.setQuizzesListLoadCallback(new QuizController.QuizzesListLoadCallback() {
             @Override
             public void onQuizzesListLoaded(List<Quiz> quizzes) {
+                MainActivity.this.quizzes = quizzes;
                 adapter = new ListViewAdapter(MainActivity.this, quizzes);
                 listView.setAdapter(adapter);
             }
