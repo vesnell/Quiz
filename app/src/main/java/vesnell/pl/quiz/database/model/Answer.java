@@ -21,6 +21,10 @@ public class Answer {
     public Answer() {
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Question getQuestion() {
         return question;
     }

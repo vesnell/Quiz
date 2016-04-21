@@ -33,6 +33,10 @@ public class Question {
     public Question() {
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Quiz getQuiz() {
         return quiz;
     }
