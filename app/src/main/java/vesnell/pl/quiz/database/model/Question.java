@@ -10,6 +10,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import vesnell.pl.quiz.json.JsonTags;
  * Created by ascen on 2016-04-21.
  */
 @DatabaseTable(tableName="Question")
-public class Question {
+public class Question implements Serializable {
 
     private static final String TAG = "Question";
 

@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import org.json.JSONObject;
 
-import java.util.AbstractMap;
+import java.io.Serializable;
 
 import vesnell.pl.quiz.json.JsonTags;
 
@@ -13,7 +13,7 @@ import vesnell.pl.quiz.json.JsonTags;
  * Created by ascen on 2016-04-21.
  */
 @DatabaseTable(tableName="Answer")
-public class Answer {
+public class Answer implements Serializable {
 
     public static final int ANSWERS_IN_ONE_QUESTION_COUNT = 4;
 
@@ -25,6 +25,8 @@ public class Answer {
     private String text;
     @DatabaseField
     private int order;
+    @DatabaseField
+    private boolean isCorrect;
 
     public Answer() {
     }
@@ -32,14 +34,17 @@ public class Answer {
     public Answer(JSONObject item) {
         String text = item.optString(JsonTags.text);
         int order = item.optInt(JsonTags.order);
+        int isCorrect = item.optInt(JsonTags.isCorrect);
         this.text = text;
         this.order = order;
+        this.isCorrect = isCorrect == 1;
     }
 
     public Answer(Question question, Answer answer) {
         this.question = question;
         this.text = answer.getText();
         this.order = answer.getOrder();
+        this.isCorrect = answer.isCorrect();
     }
 
     public int getId() {
@@ -68,5 +73,13 @@ public class Answer {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(boolean correct) {
+        isCorrect = correct;
     }
 }

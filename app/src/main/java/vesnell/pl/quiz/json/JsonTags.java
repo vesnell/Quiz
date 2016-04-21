@@ -14,4 +14,5 @@ public interface JsonTags {
     String order = "order";
     String image = "image";
     String answers = "answers";
+    String isCorrect = "isCorrect";
 }

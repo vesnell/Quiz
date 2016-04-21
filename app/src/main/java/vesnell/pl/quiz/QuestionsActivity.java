@@ -104,12 +104,12 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     }
 
     private void loadAnswers(List<Question> questions) {
-        for (Question question : questions) {
-            Log.d(TAG, question.getText());
+        for (final Question question : questions) {
             answerController.setAnswersListLoadCallback(new AnswerController.AnswersListLoadCallback() {
                 @Override
                 public void onAnswersListLoaded(List<Answer> answers) {
                     for (Answer answer : answers) {
+                        Log.d(TAG, answer.getQuestion().getText());
                         Log.d(TAG, answer.getText());
                     }
                 }
