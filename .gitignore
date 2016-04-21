@@ -34,3 +34,6 @@ captures/
 .idea/workspace.xml
 .idea/libraries
 *.iml
+.idea/misc.xml
+.idea/modules.xml
+app/app.iml
