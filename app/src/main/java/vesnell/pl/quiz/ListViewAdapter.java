@@ -73,7 +73,8 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
         } else {
             holder.tvScore.setVisibility(View.GONE);
         }
-        Picasso.with(context).load(quizzes.get(position).getMainPhoto()).into(holder.ivMainPhoto);
+        Picasso.with(context).load(quizzes.get(position).getMainPhoto())
+                .resizeDimen(R.dimen.list_item_height, R.dimen.list_item_width).centerCrop().into(holder.ivMainPhoto);
 
         return rowView;
     }
