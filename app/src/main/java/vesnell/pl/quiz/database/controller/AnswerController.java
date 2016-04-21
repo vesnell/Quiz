@@ -18,6 +18,7 @@ import vesnell.pl.quiz.database.model.Question;
  */
 public class AnswerController extends BaseController<Answer> {
     private static final String TAG = "AnswerController";
+    private static final int ANSWERS_COUNT = 4;
 
     public AnswerController(Context context) {
         super(context, Answer.class);
@@ -78,7 +79,7 @@ public class AnswerController extends BaseController<Answer> {
                 try {
                     for (Answer answer : answers) {
                         Question question = answer.getQuestion();
-                        if (getFirst("question_id", question.getId()) == null) {
+                        if (getCount("question_id", question.getId()) < ANSWERS_COUNT) {
                             create(answer);
                         }
                     }

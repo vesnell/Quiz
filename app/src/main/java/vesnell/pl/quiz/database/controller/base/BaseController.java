@@ -51,12 +51,13 @@ public abstract class BaseController<M> {
         return dao.delete(item) == 1;
     }
 
-    protected M getFirst(String field, Object parentId) throws SQLException {
+    protected int getCount(String field, Object parentId) throws SQLException {
         QueryBuilder<M, String> queryBuilder = dao.queryBuilder();
+        queryBuilder.setCountOf(true);
         SelectArg arg = new SelectArg();
-        queryBuilder.where().eq(field, arg);
+        queryBuilder.setWhere(queryBuilder.where().eq(field, parentId));
         PreparedQuery<M> preparedQuery = queryBuilder.prepare();
         arg.setValue(parentId);
-        return dao.queryForFirst(preparedQuery);
+        return (int) dao.countOf(preparedQuery);
     }
 }

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             case DownloadQuizService.STATUS_FINISHED:
                 List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
                 if (quizzes != null && quizzes.size() > 0) {
-                    saveQuiz(quizzes);
+                    saveQuizzes(quizzes);
                 } else {
                     showQuizList();
                 }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         }
     }
 
-    private void saveQuiz(final List<Quiz> quizzes) {
+    private void saveQuizzes(final List<Quiz> quizzes) {
         quizController.setQuizzesListSaveCallback(this);
         quizController.saveQuizzesList(quizzes);
     }

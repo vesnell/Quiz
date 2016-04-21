@@ -3,13 +3,18 @@ package vesnell.pl.quiz.database.controller;
 import android.content.Context;
 import android.os.Handler;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+
 import java.sql.SQLException;
 import java.util.List;
 
+import vesnell.pl.quiz.database.DBHelper;
 import vesnell.pl.quiz.database.controller.base.BaseController;
 import vesnell.pl.quiz.database.controller.base.CallbackRunnable;
 import vesnell.pl.quiz.database.controller.base.ControllerHandler;
 import vesnell.pl.quiz.database.controller.base.ControllerRunnable;
+import vesnell.pl.quiz.database.model.Answer;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
@@ -33,7 +38,7 @@ public class QuestionController extends BaseController<Question> {
         void onQuestionSaved(boolean result, Question question);
     }
     public interface QuestionsListSaveCallback {
-        void onQuestionsListSaved(boolean result);
+        void onQuestionsListSaved(boolean result, List<Question> questions);
     }
 
     private QuestionControllerHandler handler = new QuestionControllerHandler();
@@ -71,20 +76,29 @@ public class QuestionController extends BaseController<Question> {
         });
     }
 
-    public void saveQuestionsList(final List<Question> questions) {
+    public void saveQuestionsList(final List<Question> questions, final Quiz quiz) {
         ControllerHandler.getInstance().execute(new ControllerRunnable() {
             @Override
             protected void runController() {
                 try {
                     for (Question question : questions) {
-                        Quiz quiz = question.getQuiz();
-                        if (getFirst("quiz_id", quiz.getId()) == null) {
-                            create(question);
+                        if (getCount("quiz_id", quiz.getId()) < quiz.getQuestionsCount()) {
+                            question.setQuiz(quiz);
+                            if (create(question)) {
+                                RuntimeExceptionDao<Answer, Integer> answerDao
+                                        = OpenHelperManager.getHelper(context, DBHelper.class)
+                                        .getRuntimeExceptionDao(Answer.class);
+                                List<Answer> answers = question.getTempAnswers();
+                                for (Answer a : answers) {
+                                    Answer answer = new Answer(question, a);
+                                    answerDao.create(answer);
+                                }
+                            }
                         }
                     }
-                    handler.onQuestionsListSaved(true);
+                    handler.onQuestionsListSaved(true, questions);
                 } catch(SQLException e) {
-                    handler.onQuestionsListSaved(false);
+                    handler.onQuestionsListSaved(false, questions);
                 }
             }
         });
@@ -129,11 +143,11 @@ public class QuestionController extends BaseController<Question> {
         }
 
         @Override
-        public void onQuestionsListSaved(final boolean result) {
+        public void onQuestionsListSaved(final boolean result, final List<Question> questions) {
             this.post(new CallbackRunnable() {
                 @Override
                 protected void runCallback() {
-                    questionsListSaveCallback.onQuestionsListSaved(result);
+                    questionsListSaveCallback.onQuestionsListSaved(result, questions);
                 }
             });
         }

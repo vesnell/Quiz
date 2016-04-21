@@ -17,20 +17,22 @@ import vesnell.pl.quiz.database.model.Quiz;
 /**
  * Created by ascen on 2016-04-21.
  */
-public class QuestionsActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver {
+public class QuestionsActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver,
+        QuestionController.QuestionsListSaveCallback {
 
     private static final String TAG = "QuestionsActivity";
 
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
     private QuestionController questionController;
+    private Quiz quiz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle b = getIntent().getExtras();
-        Quiz quiz = (Quiz) b.getSerializable(Quiz.NAME);
+        quiz = (Quiz) b.getSerializable(Quiz.NAME);
         String quizId = quiz.getId();
         int questionsCount = quiz.getQuestionsCount();
 
@@ -65,10 +67,25 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             case DownloadQuizService.STATUS_FINISHED:
                 List<Question> questions = (List<Question>) resultData.getSerializable(DownloadQuizService.RESULT);
-                Log.d(TAG, questions.get(0).getText());
+                saveQuestions(questions);
                 progressDialog.cancel();
                 break;
 
+        }
+    }
+
+    private void saveQuestions(List<Question> questions) {
+        questionController.setQuestionsListSaveCallback(this);
+        questionController.saveQuestionsList(questions, quiz);
+    }
+
+    @Override
+    public void onQuestionsListSaved(boolean result, List<Question> questions) {
+        if (result) {
+
+        } else {
+            Log.w(TAG, "error: write to db");
+            Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
         }
     }
 }
