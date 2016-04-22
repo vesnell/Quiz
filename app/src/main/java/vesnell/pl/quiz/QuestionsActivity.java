@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     private QuestionController questionController;
     private AnswerController answerController;
     private Quiz quiz;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,11 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         final String url = getResources().getString(R.string.quiz_questions_url, quizId);
 
         setContentView(R.layout.activity_questions);
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+
+        QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
+        viewPager.setAdapter(questionPagerAdapter);
 
         questionController = new QuestionController(getApplicationContext());
         answerController = new AnswerController(getApplicationContext());
