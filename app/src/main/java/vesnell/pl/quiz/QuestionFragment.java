@@ -5,7 +5,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
+import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
 /**
@@ -29,6 +36,26 @@ public class QuestionFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_question, container, false);
         Quiz quiz = (Quiz) getArguments().getSerializable(Quiz.NAME);
         int qustionNr = getArguments().getInt(QUESTION_NR);
+
+        TextView tvQuestionText = (TextView) v.findViewById(R.id.questionText);
+        ImageView ivQuestionImage = (ImageView) v.findViewById(R.id.questionImage);
+
+        String imageUrl = null;
+
+        List<Question> questions = quiz.getQuestions();
+        for (Question question : questions) {
+            if (question.getOrder() == qustionNr) {
+                tvQuestionText.setText(question.getText());
+                imageUrl = question.getImage();
+                break;
+            }
+        }
+
+        if (imageUrl != null && imageUrl.length() > 0) {
+            ivQuestionImage.setVisibility(View.VISIBLE);
+            Picasso.with(getContext()).load(imageUrl)
+                    .resizeDimen(R.dimen.list_item_width, R.dimen.list_item_height).centerCrop().into(ivQuestionImage);
+        }
         return v;
     }
 
