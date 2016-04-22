@@ -1,5 +1,6 @@
 package vesnell.pl.quiz;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import vesnell.pl.quiz.database.model.Quiz;
 public class QuestionFragment extends Fragment {
 
     private static final String QUESTION_NR = "questionNr";
+    private OnChooseAnswerListener listener;
 
     public static QuestionFragment newInstance(int questionNr, Quiz quiz) {
         QuestionFragment questionFragment = new QuestionFragment();
@@ -66,7 +68,7 @@ public class QuestionFragment extends Fragment {
         return v;
     }
 
-    private void createAnswers(FrameLayout flAnswers, Question question) {
+    private void createAnswers(FrameLayout flAnswers, final Question question) {
         final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
         RadioGroup rg = new RadioGroup(getContext());
         rg.setOrientation(RadioGroup.VERTICAL);
@@ -77,6 +79,27 @@ public class QuestionFragment extends Fragment {
             rg.addView(rb[i]);
         }
         flAnswers.addView(rg);
+
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                listener.setNextQuestion(question.getOrder() - 1);
+            }
+        });
+    }
+
+    public interface OnChooseAnswerListener {
+        void setNextQuestion(int currentQuestionNr);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            listener = (OnChooseAnswerListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnChooseAnswerListener");
+        }
     }
 
 }

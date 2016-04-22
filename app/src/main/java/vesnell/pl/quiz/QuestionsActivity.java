@@ -21,7 +21,8 @@ import vesnell.pl.quiz.database.model.Quiz;
  * Created by ascen on 2016-04-21.
  */
 public class QuestionsActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver,
-        QuestionController.QuestionsListSaveCallback {
+        QuestionController.QuestionsListSaveCallback,
+        QuestionFragment.OnChooseAnswerListener {
 
     private static final String TAG = "QuestionsActivity";
 
@@ -101,6 +102,16 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         } else {
             Log.w(TAG, "error: write to db");
             Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void setNextQuestion(int currentQuestionNr) {
+        int count = viewPager.getAdapter().getCount();
+        if (currentQuestionNr + 1 == count) {
+            Log.d(TAG, "koniec quizu");
+        } else {
+            viewPager.setCurrentItem(currentQuestionNr + 1);
         }
     }
 }
