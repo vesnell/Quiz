@@ -15,4 +15,8 @@
     <dimen name="question_title_margin_bottom">12dp</dimen>
     <dimen name="question_title_padding_right">12dp</dimen>
     <dimen name="question_title_padding_left">12dp</dimen>
+
+    <dimen name="answers_padding_right">32dp</dimen>
+    <dimen name="answers_padding_left">32dp</dimen>
+    <dimen name="answers_margin_top">32dp</dimen>
 </resources>

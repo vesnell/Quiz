@@ -62,6 +62,7 @@ public class Question implements Serializable {
         this.order = order;
         this.image = image;
         this.tempAnswers = answers;
+        this.answersCount = answers.size();
     }
 
     public int getId() {
