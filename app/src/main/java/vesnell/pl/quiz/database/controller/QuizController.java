@@ -51,6 +51,16 @@ public class QuizController extends BaseController<Quiz> {
         handler.quizzesListSaveCallback = quizzesListSaveCallback;
     }
 
+    public void loadQuiz(final String quizId) {
+        ControllerHandler.getInstance().execute(new ControllerRunnable() {
+            @Override
+            protected void runController() {
+                Quiz quiz = get(quizId);
+                handler.onQuizLoaded(quiz);
+            }
+        });
+    }
+
     public void requestList() {
         ControllerHandler.getInstance().execute(new ControllerRunnable() {
             @Override

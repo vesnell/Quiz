@@ -13,7 +13,7 @@ import java.util.List;
 
 import vesnell.pl.quiz.database.controller.AnswerController;
 import vesnell.pl.quiz.database.controller.QuestionController;
-import vesnell.pl.quiz.database.model.Answer;
+import vesnell.pl.quiz.database.controller.QuizController;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
 
@@ -39,16 +39,12 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         Bundle b = getIntent().getExtras();
         quiz = (Quiz) b.getSerializable(Quiz.NAME);
         String quizId = quiz.getId();
-        int questionsCount = quiz.getQuestionsCount();
 
         final String url = getResources().getString(R.string.quiz_questions_url, quizId);
 
         setContentView(R.layout.activity_questions);
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-
-        QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
-        viewPager.setAdapter(questionPagerAdapter);
 
         questionController = new QuestionController(getApplicationContext());
         answerController = new AnswerController(getApplicationContext());
@@ -93,36 +89,18 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     @Override
     public void onQuestionsListSaved(boolean result, List<Question> questions) {
         if (result) {
-            loadQuestions();
+            QuizController quizController = new QuizController(this);
+            quizController.setQuizLoadCallback(new QuizController.QuizLoadCallback() {
+                @Override
+                public void onQuizLoaded(Quiz quiz) {
+                    QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
+                    viewPager.setAdapter(questionPagerAdapter);
+                }
+            });
+            quizController.loadQuiz(quiz.getId());
         } else {
             Log.w(TAG, "error: write to db");
             Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
         }
     }
-
-    private void loadQuestions() {
-        questionController.setQuestionsListLoadCallback(new QuestionController.QuestionsListLoadCallback() {
-            @Override
-            public void onQuestionsListLoaded(List<Question> questions) {
-                loadAnswers(questions);
-            }
-        });
-        questionController.requestList(quiz);
-    }
-
-    private void loadAnswers(List<Question> questions) {
-        for (final Question question : questions) {
-            answerController.setAnswersListLoadCallback(new AnswerController.AnswersListLoadCallback() {
-                @Override
-                public void onAnswersListLoaded(List<Answer> answers) {
-                    for (Answer answer : answers) {
-                        Log.d(TAG, answer.getQuestion().getText());
-                        Log.d(TAG, answer.getText());
-                    }
-                }
-            });
-            answerController.requestList(question);
-        }
-    }
-
 }

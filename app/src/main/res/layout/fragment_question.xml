@@ -7,12 +7,18 @@
         android:id="@+id/questionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:layout_marginTop="@dimen/question_title_margin_top"
+        android:layout_marginBottom="@dimen/question_title_margin_bottom"
+        android:paddingLeft="@dimen/question_title_padding_left"
+        android:paddingRight="@dimen/question_title_padding_right" />
 
     <ImageView
         android:id="@+id/questionImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/black"
         android:visibility="gone"/>
 
 </LinearLayout>

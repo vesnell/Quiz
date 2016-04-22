@@ -35,7 +35,7 @@ public class QuestionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_question, container, false);
         Quiz quiz = (Quiz) getArguments().getSerializable(Quiz.NAME);
-        int qustionNr = getArguments().getInt(QUESTION_NR);
+        int questionNr = getArguments().getInt(QUESTION_NR);
 
         TextView tvQuestionText = (TextView) v.findViewById(R.id.questionText);
         ImageView ivQuestionImage = (ImageView) v.findViewById(R.id.questionImage);
@@ -44,7 +44,7 @@ public class QuestionFragment extends Fragment {
 
         List<Question> questions = quiz.getQuestions();
         for (Question question : questions) {
-            if (question.getOrder() == qustionNr) {
+            if (question.getOrder() == questionNr) {
                 tvQuestionText.setText(question.getText());
                 imageUrl = question.getImage();
                 break;
