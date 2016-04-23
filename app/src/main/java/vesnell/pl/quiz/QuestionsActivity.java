@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import vesnell.pl.quiz.database.controller.AnswerController;
 import vesnell.pl.quiz.database.controller.QuestionController;
 import vesnell.pl.quiz.database.controller.QuizController;
 import vesnell.pl.quiz.database.model.Question;
@@ -25,12 +24,21 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         QuestionFragment.OnChooseAnswerListener {
 
     private static final String TAG = "QuestionsActivity";
+    private static final int QUESTION_ANSWER_DELAY = 500;
 
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
     private QuestionController questionController;
     private Quiz quiz;
     private ViewPager viewPager;
+    private Handler handler = new Handler();
+    private Runnable vpRunnable = new Runnable() {
+        @Override
+        public void run() {
+            int currentItem = viewPager.getCurrentItem();
+            viewPager.setCurrentItem(currentItem + 1);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,12 +112,14 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     }
 
     @Override
-    public void setNextQuestion(int currentQuestionNr) {
-        int count = viewPager.getAdapter().getCount();
-        if (currentQuestionNr + 1 == count) {
+    public void setNextQuestion() {
+        int currentItem = viewPager.getCurrentItem();
+        int totalItems = viewPager.getAdapter().getCount();
+        if (currentItem + 1 == totalItems) {
             Log.d(TAG, "koniec quizu");
+            handler.removeCallbacks(vpRunnable);
         } else {
-            viewPager.setCurrentItem(currentQuestionNr + 1);
+            handler.postDelayed(vpRunnable, QUESTION_ANSWER_DELAY);
         }
     }
 }
