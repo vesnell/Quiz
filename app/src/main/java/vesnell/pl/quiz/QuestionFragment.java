@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class QuestionFragment extends Fragment {
     private OnChooseAnswerListener listener;
     private TextView tvQuestionText;
     private ImageView ivQuestionImage;
+    private boolean isQuestionAnswered = false;
 
     public static QuestionFragment newInstance(int position, Quiz quiz) {
         QuestionFragment questionFragment = new QuestionFragment();
@@ -80,7 +82,43 @@ public class QuestionFragment extends Fragment {
         }
     }
 
-    private void createAnswers(FrameLayout flAnswers, final Question question) {
+    private void createAnswers(FrameLayout flAnswers, Question question) {
+        Answer.Type answerType = question.getAnswerType();
+        switch (answerType) {
+            case TEXT:
+                setTextAnswers(flAnswers, question);
+                break;
+            case IMAGE:
+                setImageAnswers(flAnswers, question);
+                break;
+            case TEXT_IMAGE:
+                setTextImageAnswers(flAnswers, question);
+                break;
+        }
+
+    }
+
+    private void setTextImageAnswers(FrameLayout flAnswers, Question question) {
+    }
+
+    private void setImageAnswers(FrameLayout flAnswers, Question question) {
+        LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        List<Answer> answers = question.getAnswers();
+        for (int i = 0; i < answers.size(); i++) {
+            ImageView iv = new ImageView(getContext());
+            iv.setLayoutParams(ivParams);
+            if (i % 2 == 0) {
+                LinearLayout ll = new LinearLayout(getContext());
+                ll.setOrientation(LinearLayout.HORIZONTAL);
+                ll.setLayoutParams(llParams);
+            }
+        }
+    }
+
+    private void setTextAnswers(FrameLayout flAnswers, final Question question) {
         final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
         RadioGroup rg = new RadioGroup(getContext());
         rg.setOrientation(RadioGroup.VERTICAL);
@@ -95,13 +133,16 @@ public class QuestionFragment extends Fragment {
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                listener.setNextQuestion(question.getOrder() - 1);
+                if (!isQuestionAnswered) {
+                    isQuestionAnswered = true;
+                    listener.setNextQuestion();
+                }
             }
         });
     }
 
     public interface OnChooseAnswerListener {
-        void setNextQuestion(int currentQuestionNr);
+        void setNextQuestion();
     }
 
     @Override
