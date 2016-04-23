@@ -38,7 +38,9 @@ public class Question implements Serializable {
     @DatabaseField
     private int answersCount;
     @DatabaseField
-    private String type;
+    private Type type;
+    @DatabaseField
+    private Answer.Type answerType;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
@@ -47,10 +49,35 @@ public class Question implements Serializable {
     public Question() {
     }
 
+    public enum Type {
+        TEXT(JsonTags.QUESTION_TEXT),
+        IMAGE(JsonTags.QUESTION_IMAGE),
+        TEXT_IMAGE(JsonTags.QUESTION_TEXT_IMAGE);
+
+        private String type;
+
+        Type(String type) {
+            this.type = type;
+        }
+
+        private String getType() {
+            return type;
+        }
+
+        public static Type getType(String t) {
+            for (Type type : Type.values()) {
+                if (type.getType().equals(t)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+
     public Question(JSONObject item, Quiz quiz) {
         String text = item.optString(JsonTags.text);
-        String type = item.optString(JsonTags.type);
-        String answerType = item.optString(JsonTags.answer);
+        Type type = Type.getType(item.optString(JsonTags.type));
+        Answer.Type answerType = Answer.Type.getType(item.optString(JsonTags.answer));
         int order = item.optInt(JsonTags.order);
         JSONObject jsonImage = item.optJSONObject(JsonTags.image);
         String image = jsonImage.optString(JsonTags.url);
@@ -58,7 +85,7 @@ public class Question implements Serializable {
         ArrayList<Answer> answers = new ArrayList<Answer>();
         for (int i = 0; i < jsonAnswers.length(); i++) {
             JSONObject answerItem = jsonAnswers.optJSONObject(i);
-            Answer answer = new Answer(answerItem, answerType);
+            Answer answer = new Answer(answerItem);
             answers.add(answer);
         }
         this.quiz = quiz;
@@ -68,6 +95,7 @@ public class Question implements Serializable {
         this.tempAnswers = answers;
         this.answersCount = answers.size();
         this.type = type;
+        this.answerType = answerType;
     }
 
     public int getId() {
@@ -132,11 +160,19 @@ public class Question implements Serializable {
         this.answersCount = answersCount;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
+    }
+
+    public Answer.Type getAnswerType() {
+        return answerType;
+    }
+
+    public void setAnswerType(Answer.Type answerType) {
+        this.answerType = answerType;
     }
 }

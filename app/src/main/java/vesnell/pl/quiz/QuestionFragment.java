@@ -19,6 +19,7 @@ import java.util.List;
 import vesnell.pl.quiz.database.model.Answer;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
+import vesnell.pl.quiz.json.JsonTags;
 
 /**
  * Created by ascen on 2016-04-22.
@@ -27,6 +28,8 @@ public class QuestionFragment extends Fragment {
 
     private static final String QUESTION_NR = "questionNr";
     private OnChooseAnswerListener listener;
+    private TextView tvQuestionText;
+    private ImageView ivQuestionImage;
 
     public static QuestionFragment newInstance(int questionNr, Quiz quiz) {
         QuestionFragment questionFragment = new QuestionFragment();
@@ -43,29 +46,42 @@ public class QuestionFragment extends Fragment {
         Quiz quiz = (Quiz) getArguments().getSerializable(Quiz.NAME);
         int questionNr = getArguments().getInt(QUESTION_NR);
 
-        TextView tvQuestionText = (TextView) v.findViewById(R.id.questionText);
-        ImageView ivQuestionImage = (ImageView) v.findViewById(R.id.questionImage);
+        tvQuestionText = (TextView) v.findViewById(R.id.questionText);
+        ivQuestionImage = (ImageView) v.findViewById(R.id.questionImage);
         FrameLayout flAnswers = (FrameLayout) v.findViewById(R.id.answers_view);
-
-        String imageUrl = null;
 
         List<Question> questions = quiz.getQuestions();   //zrobic pobieranie pytan juz posortowanie po order
         for (Question question : questions) {
             if (question.getOrder() == questionNr) {
-                tvQuestionText.setText(question.getText());
-                imageUrl = question.getImage();
+                createQuestion(question);
                 createAnswers(flAnswers, question);
                 break;
             }
         }
-
-        if (imageUrl != null && imageUrl.length() > 0) {
-            ivQuestionImage.setVisibility(View.VISIBLE);
-            Picasso.with(getContext()).load(imageUrl)
-                    .resizeDimen(R.dimen.list_item_width, R.dimen.list_item_height).centerCrop().into(ivQuestionImage);
-        }
-
         return v;
+    }
+
+    private void createQuestion(Question question) {
+        Question.Type questionType = question.getType();
+        String questionText = question.getText();
+        String imageUrl = question.getImage();
+
+        switch (questionType) {
+            case TEXT:
+                tvQuestionText.setText(questionText);
+                ivQuestionImage.setVisibility(View.GONE);
+                break;
+            case IMAGE:
+                tvQuestionText.setVisibility(View.GONE);
+                Picasso.with(getContext()).load(imageUrl)
+                        .resizeDimen(R.dimen.question_image_width, R.dimen.question_image_height).centerCrop().into(ivQuestionImage);
+                break;
+            case TEXT_IMAGE:
+                tvQuestionText.setText(questionText);
+                Picasso.with(getContext()).load(imageUrl)
+                        .resizeDimen(R.dimen.question_image_width, R.dimen.question_image_height).centerCrop().into(ivQuestionImage);
+                break;
+        }
     }
 
     private void createAnswers(FrameLayout flAnswers, final Question question) {

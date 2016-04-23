@@ -25,20 +25,42 @@ public class Answer implements Serializable {
     private int order;
     @DatabaseField
     private boolean isCorrect;
-    @DatabaseField
-    private String type;
+
+    public enum Type {
+        TEXT(JsonTags.ANSWER_TEXT),
+        IMAGE(JsonTags.ANSWER_IMAGE),
+        TEXT_IMAGE(JsonTags.ANSWER_TEXT_IMAGE);
+
+        private String type;
+
+        Type(String type) {
+            this.type = type;
+        }
+
+        private String getType() {
+            return type;
+        }
+
+        public static Type getType(String t) {
+            for (Type type : Type.values()) {
+                if (type.getType().equals(t)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
 
     public Answer() {
     }
 
-    public Answer(JSONObject item, String type) {
+    public Answer(JSONObject item) {
         String text = item.optString(JsonTags.text);
         int order = item.optInt(JsonTags.order);
         int isCorrect = item.optInt(JsonTags.isCorrect);
         this.text = text;
         this.order = order;
         this.isCorrect = isCorrect == 1;
-        this.type = type;
     }
 
     public Answer(Question question, Answer answer) {
