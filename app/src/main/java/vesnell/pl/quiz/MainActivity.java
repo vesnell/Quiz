@@ -3,10 +3,12 @@ package vesnell.pl.quiz;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     private ProgressDialog progressDialog;
     private QuizController quizController;
     private List<Quiz> quizzes;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
         quizController = new QuizController(getApplicationContext());
         listView = (ListView) findViewById(R.id.listView);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -59,9 +63,23 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         //start service to download quizzes
         mReceiver = new DownloadResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, DownloadQuizService.class);
 
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        swipeRefreshLayout.setRefreshing(true);
+                        startDownloadService(url);
+                    }
+                }
+        );
+
+        startDownloadService(url);
+    }
+
+    private void startDownloadService(String url) {
         //send extras to download service
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, DownloadQuizService.class);
         intent.putExtra(DownloadQuizService.URL, url);
         intent.putExtra(DownloadQuizService.RECEIVER, mReceiver);
         intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadType.QUIZ);
@@ -72,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case DownloadQuizService.STATUS_RUNNING:
-                progressDialog.show();
+                setEnabledDownloadAction(true);
                 break;
             case DownloadQuizService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
@@ -84,9 +102,8 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 } else {
                     showQuizList();
                 }
-                progressDialog.cancel();
+                setEnabledDownloadAction(false);
                 break;
-
         }
     }
 
@@ -115,5 +132,19 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             }
         });
         quizController.requestList();
+    }
+
+    private void setEnabledDownloadAction(boolean isEnabled) {
+        if (isEnabled) {
+            if (!swipeRefreshLayout.isRefreshing()) {
+                progressDialog.show();
+            }
+        } else {
+            if (swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(false);
+            } else {
+                progressDialog.cancel();
+            }
+        }
     }
 }
