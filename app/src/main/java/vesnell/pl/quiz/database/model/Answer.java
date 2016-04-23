@@ -25,6 +25,8 @@ public class Answer implements Serializable, Comparable<Answer> {
     private int order;
     @DatabaseField
     private boolean isCorrect;
+    @DatabaseField
+    private String image;
 
     public enum Type {
         TEXT(JsonTags.ANSWER_TEXT),
@@ -58,9 +60,12 @@ public class Answer implements Serializable, Comparable<Answer> {
         String text = item.optString(JsonTags.text);
         int order = item.optInt(JsonTags.order);
         int isCorrect = item.optInt(JsonTags.isCorrect);
+        JSONObject jsonImage = item.optJSONObject(JsonTags.image);
+        String image = jsonImage.optString(JsonTags.url);
         this.text = text;
         this.order = order;
         this.isCorrect = isCorrect == 1;
+        this.image = image;
     }
 
     public Answer(Question question, Answer answer) {
@@ -104,6 +109,14 @@ public class Answer implements Serializable, Comparable<Answer> {
 
     public void setCorrect(boolean correct) {
         isCorrect = correct;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

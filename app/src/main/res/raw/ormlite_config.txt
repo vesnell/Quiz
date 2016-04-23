@@ -1,5 +1,5 @@
 #
-# generated on 2016/04/23 11:09:52
+# generated on 2016/04/23 12:50:07
 #
 # --table-start--
 dataClass=vesnell.pl.quiz.database.model.Quiz
@@ -94,6 +94,9 @@ fieldName=order
 # --field-end--
 # --field-start--
 fieldName=isCorrect
+# --field-end--
+# --field-start--
+fieldName=image
 # --field-end--
 # --table-fields-end--
 # --table-end--
