@@ -133,12 +133,16 @@ public class QuestionFragment extends Fragment {
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (!isQuestionAnswered) {
-                    isQuestionAnswered = true;
-                    listener.setNextQuestion();
-                }
+                setNextQuestion();
             }
         });
+    }
+
+    private void setNextQuestion() {
+        if (!isQuestionAnswered) {
+            isQuestionAnswered = true;
+            listener.setNextQuestion();
+        }
     }
 
     public interface OnChooseAnswerListener {
@@ -154,5 +158,4 @@ public class QuestionFragment extends Fragment {
             throw new ClassCastException(context.toString() + " must implement OnChooseAnswerListener");
         }
     }
-
 }

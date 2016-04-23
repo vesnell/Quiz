@@ -4,9 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vesnell.pl.quiz.database.model.Quiz;
-import vesnell.pl.quiz.utils.Resources;
 
 /**
  * Created by alek6 on 19.04.2016.
@@ -28,6 +27,7 @@ public class ListViewAdapter extends BaseAdapter {
 
     static class ViewHolder {
         public RelativeLayout itemMainLayout;
+        public LinearLayout secondaryLayout;
         public TextView tvTitle;
         public TextView tvScore;
         public TextView tvState;
@@ -68,6 +68,7 @@ public class ListViewAdapter extends BaseAdapter {
             //configure view holder
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.itemMainLayout = (RelativeLayout) rowView.findViewById(R.id.itemMainLayout);
+            viewHolder.secondaryLayout = (LinearLayout) rowView.findViewById(R.id.secondaryLayout);
             viewHolder.tvTitle = (TextView) rowView.findViewById(R.id.title);
             viewHolder.tvScore = (TextView) rowView.findViewById(R.id.score);
             viewHolder.tvState = (TextView) rowView.findViewById(R.id.state);
@@ -85,16 +86,21 @@ public class ListViewAdapter extends BaseAdapter {
         String title = quiz.getTitle();
         holder.tvTitle.setText(title);
 
+        if (quiz.hasState() || quiz.hasScore()) {
+            holder.secondaryLayout.setVisibility(View.VISIBLE);
+        } else {
+            holder.secondaryLayout.setVisibility(View.GONE);
+        }
         if (quiz.hasState()) {
             holder.tvState.setVisibility(View.VISIBLE);
-            String state = Resources.getString(R.string.quiz_last_state, quiz.getState());
+            String state = context.getResources().getString(R.string.quiz_last_state, quiz.getState());
             holder.tvState.setText(state);
         } else {
             holder.tvState.setVisibility(View.GONE);
         }
         if (quiz.hasScore()) {
             holder.tvScore.setVisibility(View.VISIBLE);
-            String score = Resources.getString(R.string.quiz_last_score, quiz.getCorrectAnswers(),
+            String score = context.getResources().getString(R.string.quiz_last_score, quiz.getCorrectAnswers(),
                     quiz.getQuestionsCount(), quiz.getScore());
             holder.tvScore.setText(score);
         } else {

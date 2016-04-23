@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import vesnell.pl.quiz.database.controller.QuizController;
@@ -190,6 +189,15 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     public enum RunServiceType {
         FIRST_RUN,
         REFRESH,
-        EXPAND;
+        EXPAND,
+        BACK_FROM_QUESTIONS;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQ_QUESTIONS && resultCode == RESULT_OK) {
+            runServiceType = RunServiceType.BACK_FROM_QUESTIONS;
+            showQuizList();
+        }
     }
 }

@@ -91,7 +91,7 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     }
 
     public Integer getState() {
-        return state;
+        return (state * 100) / questionsCount;
     }
 
     public void setState(Integer state) {

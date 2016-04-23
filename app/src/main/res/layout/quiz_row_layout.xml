@@ -32,10 +32,14 @@
         style="@style/QuizTextItem.Title"/>
 
     <LinearLayout
+        android:id="@+id/secondaryLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/darkGreyAlpha"
+        android:padding="@dimen/list_item_secondary_padding"
+        android:visibility="gone">
     
         <TextView
             android:id="@+id/score"

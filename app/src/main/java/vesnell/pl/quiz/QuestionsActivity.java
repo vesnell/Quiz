@@ -23,7 +23,8 @@ import vesnell.pl.quiz.database.model.Quiz;
  */
 public class QuestionsActivity extends AppCompatActivity implements DownloadResultReceiver.Receiver,
         QuestionController.QuestionsListSaveCallback,
-        QuestionFragment.OnChooseAnswerListener {
+        QuestionFragment.OnChooseAnswerListener,
+        QuizController.QuizSaveCallback {
 
     private static final String TAG = "QuestionsActivity";
     private static final int QUESTION_ANSWER_DELAY = 500;
@@ -34,6 +35,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     private Quiz quiz;
     private ViewPager viewPager;
     private LinePageIndicator linePageIndicator;
+    private QuizController quizController;
     private Handler handler = new Handler();
     private Runnable vpRunnable = new Runnable() {
         @Override
@@ -58,7 +60,10 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         linePageIndicator = (LinePageIndicator) findViewById(R.id.indicator);
 
+        quizController = new QuizController(getApplicationContext());
         questionController = new QuestionController(getApplicationContext());
+        quizController.setQuizSaveCallback(this);
+        questionController.setQuestionsListSaveCallback(this);
         progressDialog = new ProgressDialog(this);
 
         mReceiver = new DownloadResultReceiver(new Handler());
@@ -85,16 +90,11 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             case DownloadQuizService.STATUS_FINISHED:
                 List<Question> questions = (List<Question>) resultData.getSerializable(DownloadQuizService.RESULT);
-                saveQuestions(questions);
+                questionController.saveQuestionsList(questions, quiz);
                 progressDialog.cancel();
                 break;
 
         }
-    }
-
-    private void saveQuestions(List<Question> questions) {
-        questionController.setQuestionsListSaveCallback(this);
-        questionController.saveQuestionsList(questions, quiz);
     }
 
     @Override
@@ -125,6 +125,28 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
             handler.removeCallbacks(vpRunnable);
         } else {
             handler.postDelayed(vpRunnable, QUESTION_ANSWER_DELAY);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        int currentQuestion = viewPager.getCurrentItem();
+        if (currentQuestion > 0) {
+            quiz.setState(currentQuestion);
+        } else {
+            quiz.setState(null);
+        }
+        quizController.updateQuiz(quiz);
+    }
+
+    @Override
+    public void onQuizSaved(boolean result, Quiz quiz) {
+        if (result) {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }else {
+            Log.e(TAG, "quiz not updated");
         }
     }
 }
