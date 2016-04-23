@@ -1,5 +1,5 @@
 #
-# generated on 2016/04/21 11:45:17
+# generated on 2016/04/23 10:48:31
 #
 # --table-start--
 dataClass=vesnell.pl.quiz.database.model.Quiz
@@ -59,6 +59,9 @@ fieldName=image
 fieldName=answersCount
 # --field-end--
 # --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
 fieldName=answers
 foreignCollection=true
 foreignCollectionEager=true
@@ -88,6 +91,9 @@ fieldName=order
 # --field-end--
 # --field-start--
 fieldName=isCorrect
+# --field-end--
+# --field-start--
+fieldName=type
 # --field-end--
 # --table-fields-end--
 # --table-end--

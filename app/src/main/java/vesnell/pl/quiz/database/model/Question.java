@@ -37,6 +37,8 @@ public class Question implements Serializable {
     private String image;
     @DatabaseField
     private int answersCount;
+    @DatabaseField
+    private String type;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
@@ -47,6 +49,8 @@ public class Question implements Serializable {
 
     public Question(JSONObject item, Quiz quiz) {
         String text = item.optString(JsonTags.text);
+        String type = item.optString(JsonTags.type);
+        String answerType = item.optString(JsonTags.answer);
         int order = item.optInt(JsonTags.order);
         JSONObject jsonImage = item.optJSONObject(JsonTags.image);
         String image = jsonImage.optString(JsonTags.url);
@@ -54,7 +58,7 @@ public class Question implements Serializable {
         ArrayList<Answer> answers = new ArrayList<Answer>();
         for (int i = 0; i < jsonAnswers.length(); i++) {
             JSONObject answerItem = jsonAnswers.optJSONObject(i);
-            Answer answer = new Answer(answerItem);
+            Answer answer = new Answer(answerItem, answerType);
             answers.add(answer);
         }
         this.quiz = quiz;
@@ -63,6 +67,7 @@ public class Question implements Serializable {
         this.image = image;
         this.tempAnswers = answers;
         this.answersCount = answers.size();
+        this.type = type;
     }
 
     public int getId() {
@@ -125,5 +130,13 @@ public class Question implements Serializable {
 
     public void setAnswersCount(int answersCount) {
         this.answersCount = answersCount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

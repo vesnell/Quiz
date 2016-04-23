@@ -158,8 +158,13 @@ public class DownloadQuizService extends IntentService {
 
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.optJSONObject(i);
-                        Quiz quiz = new Quiz(item);
-                        quizzes.add(quiz);
+                        String type = item.optString(JsonTags.type);
+
+                        //add only knowledge quizzes
+                        if (type.equals(JsonTags.KNOWLEDGE)) {
+                            Quiz quiz = new Quiz(item);
+                            quizzes.add(quiz);
+                        }
                     }
 
                 } catch (JSONException e) {

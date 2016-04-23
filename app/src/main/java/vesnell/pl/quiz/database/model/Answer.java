@@ -25,17 +25,20 @@ public class Answer implements Serializable {
     private int order;
     @DatabaseField
     private boolean isCorrect;
+    @DatabaseField
+    private String type;
 
     public Answer() {
     }
 
-    public Answer(JSONObject item) {
+    public Answer(JSONObject item, String type) {
         String text = item.optString(JsonTags.text);
         int order = item.optInt(JsonTags.order);
         int isCorrect = item.optInt(JsonTags.isCorrect);
         this.text = text;
         this.order = order;
         this.isCorrect = isCorrect == 1;
+        this.type = type;
     }
 
     public Answer(Question question, Answer answer) {
