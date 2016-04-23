@@ -13,7 +13,7 @@ import vesnell.pl.quiz.json.JsonTags;
  * Created by ascen on 2016-04-21.
  */
 @DatabaseTable(tableName="Answer")
-public class Answer implements Serializable {
+public class Answer implements Serializable, Comparable<Answer> {
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -104,5 +104,10 @@ public class Answer implements Serializable {
 
     public void setCorrect(boolean correct) {
         isCorrect = correct;
+    }
+
+    @Override
+    public int compareTo(Answer answer) {
+        return order < answer.order ? -1 : 1;
     }
 }

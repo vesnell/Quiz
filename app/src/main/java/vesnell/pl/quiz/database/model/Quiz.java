@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import vesnell.pl.quiz.json.JsonTags;
@@ -20,7 +21,7 @@ import vesnell.pl.quiz.json.JsonTags;
  * Created by alek6 on 19.04.2016.
  */
 @DatabaseTable(tableName="Quiz")
-public class Quiz implements Serializable {
+public class Quiz implements Serializable, Comparable<Quiz> {
 
     private static final String TAG = "Quiz";
 
@@ -121,13 +122,24 @@ public class Quiz implements Serializable {
         try {
             if (questions != null) {
                 questions.refreshCollection();
-                return new ArrayList<Question>(questions);
+                return getSortedQuestionList();
             }
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         } catch (NullPointerException e) {
-            return new ArrayList<Question>(questions);
+            return getSortedQuestionList();
         }
         return null;
+    }
+
+    private List<Question> getSortedQuestionList() {
+        List<Question> list = new ArrayList<Question>(questions);
+        Collections.sort(list);
+        return list;
+    }
+
+    @Override
+    public int compareTo(Quiz quiz) {
+        return id.compareTo(quiz.id);
     }
 }

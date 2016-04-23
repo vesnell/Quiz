@@ -66,7 +66,7 @@ public class QuizController extends BaseController<Quiz> {
             @Override
             protected void runController() {
                 List<Quiz> quizzes = listAll();
-                //Collections.sort(quizzes, new QuizzComparator());
+                Collections.sort(quizzes, Collections.reverseOrder());
                 handler.onQuizzesListLoaded(quizzes);
             }
         });

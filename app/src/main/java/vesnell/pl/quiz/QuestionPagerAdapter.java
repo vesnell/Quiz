@@ -20,7 +20,7 @@ public class QuestionPagerAdapter  extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return QuestionFragment.newInstance(position + 1, quiz);
+        return QuestionFragment.newInstance(position, quiz);
     }
 
     @Override

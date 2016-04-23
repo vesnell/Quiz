@@ -19,22 +19,21 @@ import java.util.List;
 import vesnell.pl.quiz.database.model.Answer;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;
-import vesnell.pl.quiz.json.JsonTags;
 
 /**
  * Created by ascen on 2016-04-22.
  */
 public class QuestionFragment extends Fragment {
 
-    private static final String QUESTION_NR = "questionNr";
+    private static final String POSITION = "position";
     private OnChooseAnswerListener listener;
     private TextView tvQuestionText;
     private ImageView ivQuestionImage;
 
-    public static QuestionFragment newInstance(int questionNr, Quiz quiz) {
+    public static QuestionFragment newInstance(int position, Quiz quiz) {
         QuestionFragment questionFragment = new QuestionFragment();
         Bundle args = new Bundle();
-        args.putInt(QUESTION_NR, questionNr);
+        args.putInt(POSITION, position);
         args.putSerializable(Quiz.NAME, quiz);
         questionFragment.setArguments(args);
         return questionFragment;
@@ -44,20 +43,17 @@ public class QuestionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_question, container, false);
         Quiz quiz = (Quiz) getArguments().getSerializable(Quiz.NAME);
-        int questionNr = getArguments().getInt(QUESTION_NR);
+        int position = getArguments().getInt(POSITION);
 
         tvQuestionText = (TextView) v.findViewById(R.id.questionText);
         ivQuestionImage = (ImageView) v.findViewById(R.id.questionImage);
         FrameLayout flAnswers = (FrameLayout) v.findViewById(R.id.answers_view);
 
-        List<Question> questions = quiz.getQuestions();   //zrobic pobieranie pytan juz posortowanie po order
-        for (Question question : questions) {
-            if (question.getOrder() == questionNr) {
-                createQuestion(question);
-                createAnswers(flAnswers, question);
-                break;
-            }
-        }
+        List<Question> questions = quiz.getQuestions();
+        Question question = questions.get(position);
+        createQuestion(question);
+        createAnswers(flAnswers, question);
+
         return v;
     }
 
@@ -88,7 +84,7 @@ public class QuestionFragment extends Fragment {
         final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
         RadioGroup rg = new RadioGroup(getContext());
         rg.setOrientation(RadioGroup.VERTICAL);
-        List<Answer> answers = question.getAnswers();   //zrobic posortowana list odpowiedzi po order
+        List<Answer> answers = question.getAnswers();
         for (int i = 0; i < question.getAnswersCount(); i++) {
             rb[i] = new RadioButton(getContext());
             rb[i].setText(answers.get(i).getText());
