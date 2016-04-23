@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vesnell.pl.quiz.database.model.Quiz;
@@ -19,10 +21,10 @@ import vesnell.pl.quiz.utils.Resources;
 /**
  * Created by alek6 on 19.04.2016.
  */
-public class ListViewAdapter extends ArrayAdapter<Quiz> {
+public class ListViewAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Quiz> quizzes;
+    private List<Quiz> quizzes = new ArrayList<Quiz>();
 
     static class ViewHolder {
         public RelativeLayout itemMainLayout;
@@ -32,10 +34,28 @@ public class ListViewAdapter extends ArrayAdapter<Quiz> {
         public ImageView ivMainPhoto;
     }
 
-    public ListViewAdapter(Context context, List<Quiz> quizzes) {
-        super(context, R.layout.quiz_row_layout, quizzes);
+    public ListViewAdapter(Context context) {
         this.context = context;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
         this.quizzes = quizzes;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        return quizzes.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return quizzes.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override

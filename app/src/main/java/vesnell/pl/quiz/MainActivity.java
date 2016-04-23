@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vesnell.pl.quiz.database.controller.QuizController;
@@ -24,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     private static final String TAG = "MainActivity";
     private static final int REQ_QUESTIONS = 1;
 
+    private static final int ZERO = 0;
+    private static final int HUNDRED = 100;
+
     private ListView listView;
     private ListViewAdapter adapter;
     private DownloadResultReceiver mReceiver;
@@ -31,18 +35,28 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
     private QuizController quizController;
     private List<Quiz> quizzes;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private int nextHundred;
+    private boolean userScrolled = false;
+    private RunServiceType runServiceType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String url = getResources().getString(R.string.quiz_url);
+        final String startUrl = getResources().getString(R.string.quiz_url, ZERO, HUNDRED);
 
         setContentView(R.layout.activity_main);
 
+        nextHundred = HUNDRED;
+        runServiceType = RunServiceType.FIRST_RUN;
+
+        progressDialog = new ProgressDialog(this);
         quizController = new QuizController(getApplicationContext());
         listView = (ListView) findViewById(R.id.listView);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+        adapter = new ListViewAdapter(MainActivity.this);
+        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -58,9 +72,28 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             }
         });
 
-        progressDialog = new ProgressDialog(this);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                    userScrolled = true;
+                }
+            }
 
-        //start service to download quizzes
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                final int lastItem = firstVisibleItem + visibleItemCount;
+                if (userScrolled && lastItem > 0 && lastItem == totalItemCount) {
+                    userScrolled = false;
+                    //if end of list, load more data
+                    runServiceType = RunServiceType.EXPAND;
+                    nextHundred += HUNDRED;
+                    String url = getResources().getString(R.string.quiz_url, nextHundred, HUNDRED);
+                    startDownloadService(url);
+                }
+            }
+        });
+
         mReceiver = new DownloadResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
@@ -68,13 +101,15 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
+                        runServiceType = RunServiceType.REFRESH;
                         swipeRefreshLayout.setRefreshing(true);
-                        startDownloadService(url);
+                        startDownloadService(startUrl);
                     }
                 }
         );
 
-        startDownloadService(url);
+        //start service to download quizzes
+        startDownloadService(startUrl);
     }
 
     private void startDownloadService(String url) {
@@ -82,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         Intent intent = new Intent(Intent.ACTION_SYNC, null, this, DownloadQuizService.class);
         intent.putExtra(DownloadQuizService.URL, url);
         intent.putExtra(DownloadQuizService.RECEIVER, mReceiver);
-        intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadType.QUIZ);
+        intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadQuizService.DownloadType.QUIZ);
         startService(intent);
     }
 
@@ -127,8 +162,12 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             @Override
             public void onQuizzesListLoaded(List<Quiz> quizzes) {
                 MainActivity.this.quizzes = quizzes;
-                adapter = new ListViewAdapter(MainActivity.this, quizzes);
-                listView.setAdapter(adapter);
+                adapter.setQuizzes(quizzes);
+                listView.invalidateViews();
+
+                if (runServiceType == RunServiceType.EXPAND) {
+                    listView.setSelection(0);
+                }
             }
         });
         quizController.requestList();
@@ -146,5 +185,11 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 progressDialog.cancel();
             }
         }
+    }
+
+    public enum RunServiceType {
+        FIRST_RUN,
+        REFRESH,
+        EXPAND;
     }
 }

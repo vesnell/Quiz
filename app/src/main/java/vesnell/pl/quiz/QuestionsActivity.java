@@ -29,7 +29,6 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
     private QuestionController questionController;
-    private AnswerController answerController;
     private Quiz quiz;
     private ViewPager viewPager;
 
@@ -48,7 +47,6 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         questionController = new QuestionController(getApplicationContext());
-        answerController = new AnswerController(getApplicationContext());
         progressDialog = new ProgressDialog(this);
 
         mReceiver = new DownloadResultReceiver(new Handler());
@@ -59,7 +57,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         //send extras to download service
         intent.putExtra(DownloadQuizService.URL, url);
         intent.putExtra(DownloadQuizService.RECEIVER, mReceiver);
-        intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadType.QUESTION);
+        intent.putExtra(DownloadQuizService.DOWNLOAD_TYPE, DownloadQuizService.DownloadType.QUESTION);
         intent.putExtra(Quiz.NAME, quiz);
         startService(intent);
     }

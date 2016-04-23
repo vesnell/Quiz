@@ -220,4 +220,9 @@ public class DownloadQuizService extends IntentService {
         }
         return "";
     }
+
+    public enum DownloadType {
+        QUIZ,
+        QUESTION;
+    }
 }
