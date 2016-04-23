@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <vesnell.pl.quiz.view.NonTouchableViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <com.viewpagerindicator.LinePageIndicator
+        android:id="@+id/indicator"
+        android:padding="@dimen/indicator_line_padding"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        app:strokeWidth="@dimen/indicator_line_width"
+        app:lineWidth="@dimen/indicator_line_length"
+        app:unselectedColor="@color/unselectedQuestionPageColor"
+        app:selectedColor="@color/selectedQuestionPageColor" />
 
 </LinearLayout>

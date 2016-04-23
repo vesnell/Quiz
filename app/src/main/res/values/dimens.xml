@@ -22,4 +22,8 @@
 
     <dimen name="question_image_width">256dp</dimen>
     <dimen name="question_image_height">192dp</dimen>
+
+    <dimen name="indicator_line_length">30dp</dimen>
+    <dimen name="indicator_line_padding">5dp</dimen>
+    <dimen name="indicator_line_width">4dp</dimen>
 </resources>

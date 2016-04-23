@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.viewpagerindicator.LinePageIndicator;
+
 import java.util.List;
 
 import vesnell.pl.quiz.database.controller.QuestionController;
@@ -31,6 +33,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     private QuestionController questionController;
     private Quiz quiz;
     private ViewPager viewPager;
+    private LinePageIndicator linePageIndicator;
     private Handler handler = new Handler();
     private Runnable vpRunnable = new Runnable() {
         @Override
@@ -53,6 +56,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         setContentView(R.layout.activity_questions);
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
+        linePageIndicator = (LinePageIndicator) findViewById(R.id.indicator);
 
         questionController = new QuestionController(getApplicationContext());
         progressDialog = new ProgressDialog(this);
@@ -102,6 +106,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
                 public void onQuizLoaded(Quiz quiz) {
                     QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
                     viewPager.setAdapter(questionPagerAdapter);
+                    linePageIndicator.setViewPager(viewPager);
                 }
             });
             quizController.loadQuiz(quiz.getId());

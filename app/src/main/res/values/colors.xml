@@ -7,4 +7,6 @@
     <color name="white">#ffffff</color>
     <color name="grey">#d3d3d3</color>
     <color name="darkGreyAlpha">#88808080</color>
+    <color name="unselectedQuestionPageColor">#ff888888</color>
+    <color name="selectedQuestionPageColor">#ff880000</color>
 </resources>

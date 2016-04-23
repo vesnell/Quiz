@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'fr.avianey.com.viewpagerindicator:library:2.4.1.1@aar'
 }
