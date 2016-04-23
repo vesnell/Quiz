@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
                 adapter.setQuizzes(quizzes);
                 listView.invalidateViews();
 
-                if (runServiceType == RunServiceType.EXPAND) {
+                if (runServiceType == RunServiceType.REFRESH) {
                     listView.setSelection(0);
                 }
             }
