@@ -1,4 +1,4 @@
-package vesnell.pl.quiz;
+package vesnell.pl.quiz.android.service;
 
 /**
  * Created by alek6 on 19.04.2016.

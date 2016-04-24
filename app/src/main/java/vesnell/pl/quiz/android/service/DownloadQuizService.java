@@ -1,4 +1,4 @@
-package vesnell.pl.quiz;
+package vesnell.pl.quiz.android.service;
 
 /**
  * Created by alek6 on 19.04.2016.
@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import vesnell.pl.quiz.R;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.json.JsonTags;
 import vesnell.pl.quiz.database.model.Quiz;

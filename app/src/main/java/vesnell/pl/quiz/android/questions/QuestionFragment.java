@@ -1,4 +1,4 @@
-package vesnell.pl.quiz;
+package vesnell.pl.quiz.android.questions;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import vesnell.pl.quiz.R;
 import vesnell.pl.quiz.database.model.Answer;
 import vesnell.pl.quiz.database.model.Question;
 import vesnell.pl.quiz.database.model.Quiz;

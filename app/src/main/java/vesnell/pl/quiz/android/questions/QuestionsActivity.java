@@ -1,4 +1,4 @@
-package vesnell.pl.quiz;
+package vesnell.pl.quiz.android.questions;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -13,6 +13,9 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.util.List;
 
+import vesnell.pl.quiz.R;
+import vesnell.pl.quiz.android.service.DownloadQuizService;
+import vesnell.pl.quiz.android.service.DownloadResultReceiver;
 import vesnell.pl.quiz.database.controller.QuestionController;
 import vesnell.pl.quiz.database.controller.QuizController;
 import vesnell.pl.quiz.database.model.Question;

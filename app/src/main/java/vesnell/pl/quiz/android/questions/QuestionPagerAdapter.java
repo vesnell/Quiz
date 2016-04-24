@@ -1,4 +1,4 @@
-package vesnell.pl.quiz;
+package vesnell.pl.quiz.android.questions;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
