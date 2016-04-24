@@ -33,7 +33,7 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     private String title;
     @DatabaseField
     private String mainPhoto;
-    @DatabaseField
+    @DatabaseField(canBeNull = false, defaultValue = "0")
     private Integer state;
     @DatabaseField
     private Integer questionsCount;
@@ -91,6 +91,10 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     }
 
     public Integer getState() {
+        return state;
+    }
+
+    public Integer getPercentState() {
         return (state * 100) / questionsCount;
     }
 
@@ -99,7 +103,7 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     }
 
     public boolean hasState() {
-        return state != null;
+        return state != 0;
     }
 
     public Integer getQuestionsCount() {

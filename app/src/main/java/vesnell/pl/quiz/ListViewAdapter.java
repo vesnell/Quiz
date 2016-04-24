@@ -93,7 +93,7 @@ public class ListViewAdapter extends BaseAdapter {
         }
         if (quiz.hasState()) {
             holder.tvState.setVisibility(View.VISIBLE);
-            String state = context.getResources().getString(R.string.quiz_last_state, quiz.getState());
+            String state = context.getResources().getString(R.string.quiz_last_state, quiz.getPercentState());
             holder.tvState.setText(state);
         } else {
             holder.tvState.setVisibility(View.GONE);

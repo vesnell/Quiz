@@ -131,11 +131,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     @Override
     public void onBackPressed() {
         int currentQuestion = viewPager.getCurrentItem();
-        if (currentQuestion > 0) {
-            quiz.setState(currentQuestion);
-        } else {
-            quiz.setState(null);
-        }
+        quiz.setState(currentQuestion);
         quizController.updateQuiz(quiz);
     }
 

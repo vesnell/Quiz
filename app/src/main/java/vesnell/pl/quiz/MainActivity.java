@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
 
         progressDialog = new ProgressDialog(this);
         quizController = new QuizController(getApplicationContext());
+        quizController.setQuizzesListSaveCallback(this);
         listView = (ListView) findViewById(R.id.listView);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
@@ -132,18 +133,13 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
             case DownloadQuizService.STATUS_FINISHED:
                 List<Quiz> quizzes = (List<Quiz>) resultData.getSerializable(DownloadQuizService.RESULT);
                 if (quizzes != null && quizzes.size() > 0) {
-                    saveQuizzes(quizzes);
+                    quizController.saveQuizzesList(quizzes);
                 } else {
                     showQuizList();
                 }
                 setEnabledDownloadAction(false);
                 break;
         }
-    }
-
-    private void saveQuizzes(final List<Quiz> quizzes) {
-        quizController.setQuizzesListSaveCallback(this);
-        quizController.saveQuizzesList(quizzes);
     }
 
     @Override

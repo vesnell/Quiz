@@ -1,5 +1,5 @@
 #
-# generated on 2016/04/23 12:50:07
+# generated on 2016/04/24 08:43:01
 #
 # --table-start--
 dataClass=vesnell.pl.quiz.database.model.Quiz
@@ -17,6 +17,8 @@ fieldName=mainPhoto
 # --field-end--
 # --field-start--
 fieldName=state
+defaultValue=0
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=questionsCount
