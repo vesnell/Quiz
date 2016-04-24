@@ -106,7 +106,9 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
                 public void onQuizLoaded(Quiz quiz) {
                     QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
                     viewPager.setAdapter(questionPagerAdapter);
+                    viewPager.setCurrentItem(quiz.getState());
                     linePageIndicator.setViewPager(viewPager);
+                    linePageIndicator.setCurrentItem(quiz.getState());
                 }
             });
             quizController.loadQuiz(quiz.getId());
