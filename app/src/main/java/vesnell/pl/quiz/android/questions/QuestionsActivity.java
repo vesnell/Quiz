@@ -58,6 +58,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         quiz = (Quiz) b.getSerializable(Quiz.NAME);
 
         setContentView(R.layout.activity_questions);
+        setTitle(quiz.getTitle());
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         linePageIndicator = (LinePageIndicator) findViewById(R.id.indicator);
