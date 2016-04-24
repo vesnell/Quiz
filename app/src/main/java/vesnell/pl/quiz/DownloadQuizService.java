@@ -118,14 +118,12 @@ public class DownloadQuizService extends IntentService {
                     if (!md5FromResponse.equals(quizMD5)) {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putString(MD5_QUIZ_PREFERENCES, md5FromResponse);
-                        editor.commit();
-                        Object results = parseResult(response, downloadType);
-                        return results;
+                        editor.apply();
+                        return parseResult(response, downloadType);
                     }
                     break;
                 case QUESTION:
-                    Object results = parseResult(response, downloadType);
-                    return results;
+                    return parseResult(response, downloadType);
             }
             return null;
         } else {
@@ -142,9 +140,7 @@ public class DownloadQuizService extends IntentService {
         while ((line = bufferedReader.readLine()) != null) {
             result += line;
         }
-        if (inputStream != null) {
-            inputStream.close();
-        }
+        inputStream.close();
         return result;
     }
 

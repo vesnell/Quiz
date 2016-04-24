@@ -87,31 +87,44 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
                 break;
             case DownloadQuizService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                Log.w(TAG, error);
             case DownloadQuizService.STATUS_FINISHED:
                 List<Question> questions = (List<Question>) resultData.getSerializable(DownloadQuizService.RESULT);
-                questionController.saveQuestionsList(questions, quiz);
+                if (questions != null && questions.size() > 0) {
+                    questionController.saveQuestionsList(questions, quiz);
+                } else {
+                    showQuestions();
+                }
                 progressDialog.cancel();
                 break;
 
         }
     }
 
-    @Override
-    public void onQuestionsListSaved(boolean result, List<Question> questions) {
-        if (result) {
-            QuizController quizController = new QuizController(this);
-            quizController.setQuizLoadCallback(new QuizController.QuizLoadCallback() {
-                @Override
-                public void onQuizLoaded(Quiz quiz) {
+    private void showQuestions() {
+        QuizController quizController = new QuizController(this);
+        quizController.setQuizLoadCallback(new QuizController.QuizLoadCallback() {
+            @Override
+            public void onQuizLoaded(Quiz quiz) {
+                if (quiz.getQuestions() != null && quiz.getQuestions().size() > 0) {
                     QuestionPagerAdapter questionPagerAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), quiz);
                     viewPager.setAdapter(questionPagerAdapter);
                     viewPager.setCurrentItem(quiz.getState());
                     linePageIndicator.setViewPager(viewPager);
                     linePageIndicator.setCurrentItem(quiz.getState());
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.empty_questions, Toast.LENGTH_LONG).show();
+                    onBackPressed();
                 }
-            });
-            quizController.loadQuiz(quiz.getId());
+            }
+        });
+        quizController.loadQuiz(quiz.getId());
+    }
+
+    @Override
+    public void onQuestionsListSaved(boolean result, List<Question> questions) {
+        if (result) {
+            showQuestions();
         } else {
             Log.w(TAG, "error: write to db");
             Toast.makeText(this, R.string.error_write_to_db, Toast.LENGTH_LONG).show();
