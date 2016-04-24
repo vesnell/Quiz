@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements DownloadResultRec
         quizController.setQuizzesListSaveCallback(this);
         listView = (ListView) findViewById(R.id.listView);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        TextView emptyView = (TextView) findViewById(R.id.tvEmpty);
+        listView.setEmptyView(emptyView);
 
         adapter = new ListViewAdapter(MainActivity.this);
         listView.setAdapter(adapter);

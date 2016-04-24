@@ -7,6 +7,7 @@
     <string name="image_item_thumb_desc">Miniaturka</string>
     <string name="questions_title">Pytania</string>
     <string name="empty_questions">Brak pytań. Możliwe, że wystąpiły problemy z pobraniem pytań.</string>
+    <string name="empty_quizzes">Brak quizów. Możliwe, że wystąpiły problemy z pobraniem quizów.</string>
 
     <string name="final_result">Brawo! Odpowiedziałeś na %1$d%% pytań poprawnie.</string>
     <string name="btn_result_back">Przejdź do listy quizów</string>
