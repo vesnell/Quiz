@@ -37,7 +37,7 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     private Integer state;
     @DatabaseField
     private Integer questionsCount;
-    @DatabaseField
+    @DatabaseField(canBeNull = false, defaultValue = "0")
     private Integer correctAnswers;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Question> questions;
@@ -87,7 +87,7 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     }
 
     public boolean hasScore() {
-        return correctAnswers != null;
+        return state == questionsCount;
     }
 
     public Integer getState() {
