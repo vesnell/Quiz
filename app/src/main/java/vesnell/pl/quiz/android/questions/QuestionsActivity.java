@@ -56,9 +56,6 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
 
         Bundle b = getIntent().getExtras();
         quiz = (Quiz) b.getSerializable(Quiz.NAME);
-        String quizId = quiz.getId();
-
-        final String url = getResources().getString(R.string.quiz_questions_url, quizId);
 
         setContentView(R.layout.activity_questions);
 
@@ -74,6 +71,11 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         mReceiver = new DownloadResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
+        startQuiz(quiz);
+    }
+
+    private void startQuiz(Quiz quiz) {
+        String url = getResources().getString(R.string.quiz_questions_url, quiz.getId());
         Intent intent = new Intent(Intent.ACTION_SYNC, null, this, DownloadQuizService.class);
 
         //send extras to download service
@@ -191,7 +193,19 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQ_RESULTS && resultCode == RESULT_OK) {
-            backToMain();
+            ResultActivity.FinishQuizType finishQuizType =
+                    (ResultActivity.FinishQuizType) data.getSerializableExtra(ResultActivity.RESULT_FINISH_TYPE);
+            switch (finishQuizType) {
+                case BACK_TO_MAIN:
+                    backToMain();
+                    break;
+                case SOLVE_AGAIN:
+                    getSupportFragmentManager().getFragments().clear();
+                    Quiz quiz = (Quiz) data.getSerializableExtra(Quiz.NAME);
+                    this.quiz = quiz;
+                    startQuiz(quiz);
+                    break;
+            }
         }
     }
 }
