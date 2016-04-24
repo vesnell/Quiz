@@ -119,7 +119,10 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     }
 
     @Override
-    public void setNextQuestion() {
+    public void setNextQuestion(boolean isCorrectAnswer) {
+        if (isCorrectAnswer) {
+            quiz.setCorrectAnswers(quiz.getCorrectAnswers() + 1);
+        }
         int currentItem = viewPager.getCurrentItem();
         int totalItems = viewPager.getAdapter().getCount();
         if (currentItem + 1 == totalItems) {

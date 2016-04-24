@@ -3,6 +3,7 @@ package vesnell.pl.quiz;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import vesnell.pl.quiz.database.model.Quiz;
  * Created by ascen on 2016-04-22.
  */
 public class QuestionFragment extends Fragment {
+
+    private static final String TAG = "QuestionFragment";
 
     private static final String POSITION = "position";
     private OnChooseAnswerListener listener;
@@ -122,10 +125,11 @@ public class QuestionFragment extends Fragment {
         final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
         RadioGroup rg = new RadioGroup(getContext());
         rg.setOrientation(RadioGroup.VERTICAL);
-        List<Answer> answers = question.getAnswers();
+        final List<Answer> answers = question.getAnswers();
         for (int i = 0; i < question.getAnswersCount(); i++) {
             rb[i] = new RadioButton(getContext());
             rb[i].setText(answers.get(i).getText());
+            rb[i].setId(answers.get(i).getId());
             rg.addView(rb[i]);
         }
         flAnswers.addView(rg);
@@ -133,20 +137,34 @@ public class QuestionFragment extends Fragment {
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                setNextQuestion();
+                Answer answer = getAnswer(checkedId, answers);
+                if (answer != null) {
+                    setNextQuestion(answer.isCorrect());
+                } else {
+                    Log.e(TAG, "Unknown radio button ID");
+                }
             }
         });
     }
 
-    private void setNextQuestion() {
+    private Answer getAnswer(int id, List<Answer> answers) {
+        for (Answer answer : answers) {
+            if (answer.getId() == id) {
+                return answer;
+            }
+        }
+        return null;
+    }
+
+    private void setNextQuestion(boolean isCorrectAnswer) {
         if (!isQuestionAnswered) {
             isQuestionAnswered = true;
-            listener.setNextQuestion();
+            listener.setNextQuestion(isCorrectAnswer);
         }
     }
 
     public interface OnChooseAnswerListener {
-        void setNextQuestion();
+        void setNextQuestion(boolean isCorrectAnswer);
     }
 
     @Override
