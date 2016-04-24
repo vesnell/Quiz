@@ -73,6 +73,7 @@ public class Answer implements Serializable, Comparable<Answer> {
         this.text = answer.getText();
         this.order = answer.getOrder();
         this.isCorrect = answer.isCorrect();
+        this.image = answer.getImage();
     }
 
     public int getId() {

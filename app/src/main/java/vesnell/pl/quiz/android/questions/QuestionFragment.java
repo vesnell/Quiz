@@ -1,6 +1,9 @@
 package vesnell.pl.quiz.android.questions;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,12 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -26,7 +29,7 @@ import vesnell.pl.quiz.database.model.Quiz;
 /**
  * Created by ascen on 2016-04-22.
  */
-public class QuestionFragment extends Fragment {
+public class QuestionFragment extends Fragment implements RadioGroup.OnCheckedChangeListener {
 
     private static final String TAG = "QuestionFragment";
 
@@ -35,6 +38,7 @@ public class QuestionFragment extends Fragment {
     private TextView tvQuestionText;
     private ImageView ivQuestionImage;
     private boolean isQuestionAnswered = false;
+    private List<Answer> answers;
 
     public static QuestionFragment newInstance(int position, Quiz quiz) {
         QuestionFragment questionFragment = new QuestionFragment();
@@ -57,6 +61,7 @@ public class QuestionFragment extends Fragment {
 
         List<Question> questions = quiz.getQuestions();
         Question question = questions.get(position);
+        answers = question.getAnswers();
         createQuestion(question);
         createAnswers(flAnswers, question);
 
@@ -102,31 +107,82 @@ public class QuestionFragment extends Fragment {
 
     }
 
-    private void setTextImageAnswers(FrameLayout flAnswers, Question question) {
-    }
-
-    private void setImageAnswers(FrameLayout flAnswers, Question question) {
-        LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        List<Answer> answers = question.getAnswers();
-        for (int i = 0; i < answers.size(); i++) {
-            ImageView iv = new ImageView(getContext());
-            iv.setLayoutParams(ivParams);
-            if (i % 2 == 0) {
-                LinearLayout ll = new LinearLayout(getContext());
-                ll.setOrientation(LinearLayout.HORIZONTAL);
-                ll.setLayoutParams(llParams);
-            }
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        Answer answer = getAnswer(checkedId, answers);
+        if (answer != null) {
+            setNextQuestion(answer.isCorrect());
+        } else {
+            Log.e(TAG, "Unknown radio button ID");
         }
     }
 
-    private void setTextAnswers(FrameLayout flAnswers, final Question question) {
-        final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
-        RadioGroup rg = new RadioGroup(getContext());
+    private void setTextImageAnswers(FrameLayout flAnswers, Question question) {
+        final RadioButton[] radioButtons = new RadioButton[answers.size()];
+        final RadioGroup rg = new RadioGroup(getContext());
         rg.setOrientation(RadioGroup.VERTICAL);
-        final List<Answer> answers = question.getAnswers();
+        rg.setOnCheckedChangeListener(this);
+        for (int i = 0; i < question.getAnswersCount(); i++) {
+            final int finalI = i;
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Drawable drawable = new BitmapDrawable(getContext().getResources(), bitmap);
+                    radioButtons[finalI] = new RadioButton(getContext());
+                    radioButtons[finalI].setId(answers.get(finalI).getId());
+                    radioButtons[finalI].setText(answers.get(finalI).getText());
+                    radioButtons[finalI].setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    rg.addView(radioButtons[finalI]);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            Picasso.with(getContext()).load(answers.get(finalI).getImage()).into(target);
+        }
+        flAnswers.addView(rg);
+    }
+
+    private void setImageAnswers(FrameLayout flAnswers, Question question) {
+        final RadioButton[] radioButtons = new RadioButton[answers.size()];
+        final RadioGroup rg = new RadioGroup(getContext());
+        rg.setOrientation(RadioGroup.VERTICAL);
+        rg.setOnCheckedChangeListener(this);
+        for (int i = 0; i < question.getAnswersCount(); i++) {
+            final int finalI = i;
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Drawable drawable = new BitmapDrawable(getContext().getResources(), bitmap);
+                    radioButtons[finalI] = new RadioButton(getContext());
+                    radioButtons[finalI].setId(answers.get(finalI).getId());
+                    radioButtons[finalI].setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    rg.addView(radioButtons[finalI]);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            Picasso.with(getContext()).load(answers.get(finalI).getImage()).into(target);
+        }
+        flAnswers.addView(rg);
+    }
+
+    private void setTextAnswers(FrameLayout flAnswers, final Question question) {
+        RadioGroup rg = new RadioGroup(getContext());
+        final RadioButton[] rb = new RadioButton[question.getAnswersCount()];
+        rg.setOrientation(RadioGroup.VERTICAL);
+        rg.setOnCheckedChangeListener(this);
         for (int i = 0; i < question.getAnswersCount(); i++) {
             rb[i] = new RadioButton(getContext());
             rb[i].setText(answers.get(i).getText());
@@ -134,18 +190,6 @@ public class QuestionFragment extends Fragment {
             rg.addView(rb[i]);
         }
         flAnswers.addView(rg);
-
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Answer answer = getAnswer(checkedId, answers);
-                if (answer != null) {
-                    setNextQuestion(answer.isCorrect());
-                } else {
-                    Log.e(TAG, "Unknown radio button ID");
-                }
-            }
-        });
     }
 
     private Answer getAnswer(int id, List<Answer> answers) {
