@@ -24,6 +24,11 @@
             android:label="@string/questions_title" >
         </activity>
 
+        <activity
+            android:name=".android.questions.ResultActivity"
+            android:label="@string/result_title" >
+        </activity>
+
         <service
             android:name=".android.service.DownloadQuizService"
             android:exported="false" />

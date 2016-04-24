@@ -101,7 +101,7 @@ public class ListViewAdapter extends BaseAdapter {
         }
         if (quiz.hasScore()) {
             holder.tvScore.setVisibility(View.VISIBLE);
-            String score = context.getResources().getString(R.string.quiz_last_score, quiz.getCorrectAnswers(),
+            String score = context.getResources().getString(R.string.quiz_last_score, quiz.getLastScore(),
                     quiz.getQuestionsCount(), quiz.getScore());
             holder.tvScore.setText(score);
         } else {

@@ -31,6 +31,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
 
     private static final String TAG = "QuestionsActivity";
     private static final int QUESTION_ANSWER_DELAY = 500;
+    private static final int REQ_RESULTS = 1;
 
     private DownloadResultReceiver mReceiver;
     private ProgressDialog progressDialog;
@@ -47,6 +48,7 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
             viewPager.setCurrentItem(currentItem + 1);
         }
     };
+    private boolean isUserClickOnBack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,18 +141,16 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
         if (isCorrectAnswer) {
             quiz.setCorrectAnswers(quiz.getCorrectAnswers() + 1);
         }
-        int currentItem = viewPager.getCurrentItem();
-        int totalItems = viewPager.getAdapter().getCount();
-        if (currentItem + 1 == totalItems) {
-            Log.d(TAG, "koniec quizu");
-            handler.removeCallbacks(vpRunnable);
-        } else {
-            handler.postDelayed(vpRunnable, QUESTION_ANSWER_DELAY);
-        }
+        updateQuiz();
     }
 
     @Override
     public void onBackPressed() {
+        isUserClickOnBack = true;
+        updateQuiz();
+    }
+
+    private void updateQuiz() {
         int currentQuestion = viewPager.getCurrentItem();
         quiz.setState(currentQuestion);
         quizController.updateQuiz(quiz);
@@ -159,11 +159,39 @@ public class QuestionsActivity extends AppCompatActivity implements DownloadResu
     @Override
     public void onQuizSaved(boolean result, Quiz quiz) {
         if (result) {
-            Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
-            finish();
-        }else {
+            if (isUserClickOnBack) {
+                backToMain();
+            } else {
+                int currentItem = viewPager.getCurrentItem();
+                int totalItems = viewPager.getAdapter().getCount();
+                if (currentItem + 1 == totalItems) {
+                    handler.removeCallbacks(vpRunnable);
+                    openResult(quiz);
+                } else {
+                    handler.postDelayed(vpRunnable, QUESTION_ANSWER_DELAY);
+                }
+            }
+        } else {
             Log.e(TAG, "quiz not updated");
+        }
+    }
+
+    private void backToMain() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    private void openResult(Quiz quiz) {
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra(Quiz.NAME, quiz);
+        startActivityForResult(intent, REQ_RESULTS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQ_RESULTS && resultCode == RESULT_OK) {
+            backToMain();
         }
     }
 }
