@@ -39,8 +39,8 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     private int questionsCount;
     @DatabaseField(canBeNull = false, defaultValue = "0")
     private int correctAnswers;
-    @DatabaseField(canBeNull = false, defaultValue = "0")
-    private int lastScore;
+    @DatabaseField
+    private Integer lastScore;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Question> questions;
 
@@ -85,7 +85,11 @@ public class Quiz implements Serializable, Comparable<Quiz> {
     }
 
     public Integer getScore() {
-        return (lastScore * 100) / questionsCount;
+        if (lastScore != null) {
+            return (lastScore * 100) / questionsCount;
+        } else {
+            return null;
+        }
     }
 
     public int getState() {
@@ -120,16 +124,16 @@ public class Quiz implements Serializable, Comparable<Quiz> {
         this.correctAnswers = correctAnswers;
     }
 
-    public int getLastScore() {
+    public Integer getLastScore() {
         return lastScore;
     }
 
-    public void setLastScore(int lastScore) {
+    public void setLastScore(Integer lastScore) {
         this.lastScore = lastScore;
     }
 
     public boolean hasScore() {
-        return lastScore > 0;
+        return lastScore != null;
     }
 
     public List<Question> getQuestions() {
